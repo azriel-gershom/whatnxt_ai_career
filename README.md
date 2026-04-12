@@ -1,0 +1,122 @@
+# WhatNxt - AI Career Portal
+
+An AI-powered career guidance platform for BTech CSE students, featuring roadmap generation, resume building, job matching, and psychometric career discovery.
+
+## Features
+
+- **AI Career Roadmaps**: Generate personalized 4-year career plans
+- **Resume Builder**: Create ATS-optimized resumes with AI
+- **Job Board**: Browse internships and jobs with filters
+- **Quiz Engine**: Technical quizzes and psychometric tests
+- **Career Discovery**: AI-powered career suggestions
+- **Certificate Scanner**: Extract skills from uploaded certificates
+- **AI Chat Mentor**: Get career advice from NxtBot
+
+## Tech Stack
+
+- **Backend**: Flask (Python)
+- **Frontend**: HTML/CSS/JavaScript (Vanilla)
+- **AI**: Google Gemini 2.5 Flash
+- **Database**: SQLite
+- **Data**: CSV datasets for careers, jobs, courses
+
+## Setup Instructions
+
+### Prerequisites
+- Python 3.8+
+- Git
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/yourusername/whatnxt.git
+cd whatnxt
+```
+
+### 2. Set Up Virtual Environment
+```bash
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+```
+
+### 3. Install Dependencies
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Set Up Environment Variables
+Create a `.env` file in the root directory:
+```env
+GEMINI_API_KEY=your_google_gemini_api_key_here
+```
+
+Get your API key from [Google AI Studio](https://makersuite.google.com/app/apikey).
+
+### 5. Run the Application
+
+#### Start Backend
+```bash
+cd backend
+python api_Claude.py
+```
+The API will run on `http://127.0.0.1:5000`
+
+#### Start Frontend
+Open `frontend/index_Claude.html` in your browser, or use a local server:
+```bash
+cd frontend
+python -m http.server 8000
+```
+Then visit `http://127.0.0.1:8000/index_Claude.html`
+
+## Project Structure
+
+```
+whatnxt/
+├── backend/           # Flask API server
+│   ├── api_Claude.py  # Main API file
+│   └── fix_db.py      # Database utilities
+├── frontend/          # HTML/CSS/JS client
+│   └── index_Claude.html
+├── data/              # CSV datasets
+│   ├── career_data(Claude).csv
+│   ├── courses_data(Claude).csv
+│   ├── jobs_data.csv
+│   ├── psychometric_map.csv
+│   └── quiz_data.csv
+├── db/                # SQLite databases (auto-generated)
+├── .env               # Environment variables (create this)
+├── .gitignore         # Git ignore rules
+├── requirements.txt   # Python dependencies
+└── README.md          # This file
+```
+
+## API Endpoints
+
+- `POST /api/auth` - User authentication
+- `POST /api/generate_roadmap` - Generate career roadmap
+- `POST /api/build_resume` - Build resume
+- `POST /api/get_quiz` - Get quiz questions
+- `POST /api/submit_quiz` - Submit quiz answers
+- `POST /api/get_jobs` - Get job listings
+- `POST /api/get_courses` - Get course listings
+- `GET /api/get_psychometric_quiz` - Get psychometric quiz
+- `POST /api/discover_career` - Career discovery
+- `POST /api/scan_certificate` - Certificate scanning
+- `POST /api/chat` - AI chat
+- `GET /api/health` - Health check
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## License
+
+MIT License - see LICENSE file for details
+
+## Disclaimer
+
+This is an educational project. The AI suggestions are for guidance only and should not replace professional career counseling.

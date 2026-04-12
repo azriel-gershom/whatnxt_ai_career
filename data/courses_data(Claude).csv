@@ -1,0 +1,37 @@
+Domain,Course_Name,Platform,Link,Duration,Level,Free_or_Paid,Rating
+Software Engineer,Python for Everybody,Coursera,https://www.coursera.org/specializations/python,8 months,Beginner,Free (Audit),4.8
+Software Engineer,Data Structures and Algorithms,Udemy,https://www.udemy.com/course/datastructurescncpp/,58 hours,Intermediate,Paid,4.6
+Software Engineer,Full Stack Web Development,freeCodeCamp,https://www.freecodecamp.org/learn/full-stack-developer/,Self-paced,Beginner,Free,4.7
+Software Engineer,The Complete JavaScript Course,Udemy,https://www.udemy.com/course/the-complete-javascript-course/,69 hours,Beginner to Advanced,Paid,4.7
+Software Engineer,System Design Interview,Educative,https://www.educative.io/courses/grokking-the-system-design-interview,Self-paced,Advanced,Paid,4.8
+Software Engineer,NPTEL Java Programming,NPTEL,https://nptel.ac.in/courses/106105191,12 weeks,Intermediate,Free,4.5
+Data Scientist,IBM Data Science Professional Certificate,Coursera,https://www.coursera.org/professional-certificates/ibm-data-science,11 months,Beginner,Free (Audit),4.6
+Data Scientist,Machine Learning Specialization,Coursera,https://www.coursera.org/specializations/machine-learning-introduction,3 months,Intermediate,Free (Audit),4.9
+Data Scientist,Tableau for Data Science,Udemy,https://www.udemy.com/course/tableau10/,24 hours,Beginner,Paid,4.7
+Data Scientist,SQL for Data Analysis,Kaggle,https://www.kaggle.com/learn/intro-to-sql,Self-paced,Beginner,Free,4.8
+Data Scientist,Deep Learning Specialization,Coursera,https://www.coursera.org/specializations/deep-learning,5 months,Advanced,Free (Audit),4.9
+Data Scientist,NPTEL Data Science,NPTEL,https://nptel.ac.in/courses/106106183,12 weeks,Intermediate,Free,4.5
+Cybersecurity Analyst,Google Cybersecurity Certificate,Coursera,https://www.coursera.org/professional-certificates/google-cybersecurity,6 months,Beginner,Free (Audit),4.8
+Cybersecurity Analyst,Ethical Hacking from Scratch,Udemy,https://www.udemy.com/course/learn-ethical-hacking-from-scratch/,21 hours,Beginner,Paid,4.6
+Cybersecurity Analyst,CompTIA Security+ Study Guide,Professor Messer,https://www.professormesser.com/security-plus/sy0-701/sy0-701-video/sy0-701-comptia-security-plus-course/,Self-paced,Intermediate,Free,4.7
+Cybersecurity Analyst,TryHackMe Beginner Path,TryHackMe,https://tryhackme.com/path/outline/beginner,Self-paced,Beginner,Free,4.9
+Cybersecurity Analyst,Splunk Fundamentals 1,Splunk,https://www.splunk.com/en_us/training/free-courses/splunk-fundamentals-1.html,9 hours,Beginner,Free,4.6
+Cloud Architect,AWS Cloud Practitioner Essentials,AWS,https://aws.amazon.com/training/digital/aws-cloud-practitioner-essentials/,6 hours,Beginner,Free,4.8
+Cloud Architect,AWS Solutions Architect Associate,Coursera,https://www.coursera.org/professional-certificates/aws-cloud-solutions-architect,4 months,Intermediate,Free (Audit),4.7
+Cloud Architect,Microsoft Azure Fundamentals AZ-900,Microsoft Learn,https://learn.microsoft.com/en-us/training/paths/az-900-describe-cloud-concepts/,Self-paced,Beginner,Free,4.8
+Cloud Architect,Terraform for Beginners,Udemy,https://www.udemy.com/course/terraform-beginner-to-advanced/,23 hours,Intermediate,Paid,4.7
+Cloud Architect,Google Cloud Essentials,Google Cloud Skills Boost,https://cloudskillsboost.google/course_templates/10,Self-paced,Beginner,Free,4.6
+AI Engineer,Machine Learning Intro by Andrew Ng,Coursera,https://www.coursera.org/specializations/machine-learning-introduction,3 months,Beginner,Free (Audit),4.9
+AI Engineer,LangChain with Python Bootcamp,Udemy,https://www.udemy.com/course/langchain-with-python-bootcamp/,12 hours,Intermediate,Paid,4.7
+AI Engineer,Hugging Face NLP Course,Hugging Face,https://huggingface.co/learn/nlp-course/chapter1/1,Self-paced,Intermediate,Free,4.8
+AI Engineer,PyTorch for Deep Learning,freeCodeCamp,https://www.youtube.com/watch?v=V_xro1bcAuA,25 hours,Intermediate,Free,4.8
+AI Engineer,MLOps Specialization,Coursera,https://www.coursera.org/specializations/mlops-machine-learning-duke,4 months,Advanced,Free (Audit),4.6
+Product Manager,Google Project Management Certificate,Coursera,https://www.coursera.org/professional-certificates/google-project-management,6 months,Beginner,Free (Audit),4.8
+Product Manager,Product Management Fundamentals,Udemy,https://www.udemy.com/course/productmanagement/,10 hours,Beginner,Paid,4.6
+Product Manager,Figma UI/UX Design,Udemy,https://www.udemy.com/course/figma-ux-ui-design-user-experience-tutorial-course/,17 hours,Beginner,Paid,4.7
+DevOps Engineer,"DevOps with Jenkins, Docker & Kubernetes",Udemy,https://www.udemy.com/course/devops-docker-complete-guide/,31 hours,Intermediate,Paid,4.7
+DevOps Engineer,Kubernetes for Beginners,KodeKloud,https://kodekloud.com/courses/kubernetes-for-the-absolute-beginners-hands-on/,Self-paced,Beginner,Free,4.8
+DevOps Engineer,Linux Command Line Basics,Coursera,https://www.coursera.org/learn/unix,3 weeks,Beginner,Free (Audit),4.7
+Mobile App Developer,Flutter Bootcamp with Dart,Udemy,https://www.udemy.com/course/flutter-bootcamp-with-dart/,28 hours,Beginner,Paid,4.8
+Mobile App Developer,React Native - The Practical Guide,Udemy,https://www.udemy.com/course/react-native-the-practical-guide/,38 hours,Intermediate,Paid,4.7
+Mobile App Developer,Firebase for Flutter,Firebase Docs,https://firebase.google.com/docs/flutter/setup,Self-paced,Intermediate,Free,4.6
