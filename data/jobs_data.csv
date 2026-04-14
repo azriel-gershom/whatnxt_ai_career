@@ -1,0 +1,28 @@
+Role,Company,Location,Type,Experience,Skills_Required,Apply_Link,Salary,Posted,Logo_Emoji
+Software Engineer,Google India,Bangalore,Full-time,0-2 years,Python; DSA; System Design; Problem Solving,https://careers.google.com,20-40 LPA,2025-07-01,🔵
+Software Engineer,Amazon,Hyderabad,Full-time,0-2 years,Java; DSA; OOP; SQL; AWS basics,https://amazon.jobs,18-35 LPA,2025-07-03,🟠
+Software Engineer,Infosys,Chennai,Full-time,Fresher,Java; Python; SQL; Communication,https://infosys.com/careers,3.6-5 LPA,2025-07-05,🟣
+Backend Developer,Razorpay,Bangalore,Full-time,0-1 year,Node.js; Go; REST API; PostgreSQL; Redis,https://razorpay.com/jobs,12-22 LPA,2025-07-04,💙
+Full Stack Intern,Zoho Corporation,Chennai,Internship,Fresher,JavaScript; React; SQL; REST APIs,https://careers.zohocorp.com,25-40k/month,2025-07-06,🟢
+SDE Intern,Microsoft India,Hyderabad,Internship,2nd/3rd Year,C++; Python; DSA; Problem Solving,https://careers.microsoft.com,80-100k/month,2025-07-02,🔷
+Data Science Intern,Mu Sigma,Bangalore,Internship,Fresher,Python; Pandas; SQL; Statistics,https://musigma.com/careers,15-25k/month,2025-07-01,📊
+Data Analyst,Fractal Analytics,Mumbai,Full-time,0-2 years,SQL; Tableau; Python; Excel; Statistics,https://fractal.ai/careers,5-9 LPA,2025-07-03,📈
+ML Engineer,Flipkart,Bangalore,Full-time,0-2 years,Python; Scikit-learn; TensorFlow; Spark; SQL,https://flipkartcareers.com,12-20 LPA,2025-07-04,🛒
+Data Scientist,PhonePe,Bangalore,Full-time,0-3 years,Python; ML; SQL; A/B Testing; Statistics,https://phonepe.com/careers,10-18 LPA,2025-07-05,💜
+Business Analyst Intern,Deloitte,Hyderabad,Internship,3rd/4th Year,Excel; SQL; PowerPoint; Analytical Thinking,https://deloitte.com/careers,20-35k/month,2025-07-06,🟩
+SOC Analyst,HCL Technologies,Noida,Full-time,Fresher,Networking; Linux; SIEM; Incident Response,https://hcltech.com/careers,4-7 LPA,2025-07-02,🛡️
+Security Analyst,IBM Security,Bangalore,Full-time,0-2 years,Splunk; QRadar; Python; Threat Intelligence,https://ibm.com/careers,6-12 LPA,2025-07-04,🔵
+Penetration Tester,Quick Heal Technologies,Pune,Full-time,0-2 years,Kali Linux; Metasploit; Burp Suite; Python,https://quickheal.com/careers,5-10 LPA,2025-07-03,🔒
+Cybersecurity Intern,Wipro,Remote,Internship,Fresher,Networking basics; Linux; Security concepts,https://wipro.com/careers,15-25k/month,2025-07-05,🔴
+Cloud Support Engineer,Amazon Web Services,Hyderabad,Full-time,0-2 years,AWS; Linux; Networking; Python; Troubleshooting,https://amazon.jobs/aws,7-14 LPA,2025-07-01,🟠
+Azure Cloud Engineer,Microsoft India,Bangalore,Full-time,0-2 years,Azure; ARM; PowerShell; DevOps; Networking,https://careers.microsoft.com,8-16 LPA,2025-07-03,🔷
+Cloud Intern,Google Cloud,Bangalore,Internship,2nd/3rd Year,GCP basics; Python; Linux; SQL,https://careers.google.com/gcp,60-80k/month,2025-07-04,🌈
+DevOps Engineer,ThoughtWorks,Pune,Full-time,0-2 years,Docker; Kubernetes; Jenkins; Terraform; Linux,https://thoughtworks.com/careers,7-14 LPA,2025-07-05,🔵
+AI/ML Engineer,NVIDIA India,Pune,Full-time,0-2 years,Python; PyTorch; CUDA; Deep Learning; C++,https://nvidia.com/careers,15-35 LPA,2025-07-01,🟢
+Generative AI Engineer,Accenture,Bangalore,Full-time,0-3 years,LangChain; OpenAI; Python; RAG; Vector DBs,https://accenture.com/careers,10-22 LPA,2025-07-03,🟣
+ML Research Intern,TCS Research,Mumbai,Internship,3rd/4th Year,Python; Deep Learning; Research Papers; Statistics,https://tcs.com/careers,30-50k/month,2025-07-04,🔴
+AI Product Intern,Sarvam AI,Bangalore,Internship,2nd/3rd Year,Python; LLMs; APIs; Product thinking,https://sarvam.ai/careers,25-40k/month,2025-07-06,🌟
+Associate Product Manager,Razorpay,Bangalore,Full-time,Fresher,Product Thinking; SQL; Wireframing; Communication,https://razorpay.com/jobs,8-15 LPA,2025-07-02,💙
+APM Intern,CRED,Bangalore,Internship,3rd/4th Year,Analytical thinking; Figma; SQL; User Research,https://cred.club/careers,40-60k/month,2025-07-05,⚫
+Flutter Developer,PhonePe,Bangalore,Full-time,0-2 years,Flutter; Dart; Firebase; REST APIs; Android,https://phonepe.com/careers,7-15 LPA,2025-07-03,💜
+Mobile Dev Intern,Paytm,Noida,Internship,Fresher,Android/Flutter basics; Java/Dart; APIs,https://paytm.com/careers,15-25k/month,2025-07-06,🔵

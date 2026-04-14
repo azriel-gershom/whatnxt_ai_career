@@ -1,0 +1,24 @@
+# ═══════════════════════════════════════════════════════════════
+#  WhatNxt — Git Ignore
+# ═══════════════════════════════════════════════════════════════
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+venv/
+.env
+
+# Databases (local dev — regenerated on startup)
+db/*.db
+
+# Large Kaggle datasets (too big for Git)
+data/job_data.csv
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/

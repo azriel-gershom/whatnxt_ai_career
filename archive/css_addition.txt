@@ -1,0 +1,8 @@
+/* ADD THIS inside your <style> block — after .skill-pill-search */
+
+.skill-pill-search.yt-active {
+  border-color: var(--blue-500);
+  background: rgba(37,99,235,0.12);
+  color: var(--tx-accent);
+  font-weight: 700;
+}

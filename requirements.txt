@@ -1,0 +1,9 @@
+# ═══════════════════════════════════════════════════════════════
+#  WhatNxt — Python Dependencies
+# ═══════════════════════════════════════════════════════════════
+flask>=3.0
+flask-cors>=4.0
+pandas>=2.0
+python-dotenv>=1.0
+google-genai>=1.0
+google-api-python-client>=2.100    # YouTube Data API (optional)

@@ -1,0 +1,334 @@
+<!-- ════════════════════════════════════════════════════════════
+     PASTE THIS CSS into your <style> block  (before </style>)
+════════════════════════════════════════════════════════════════ -->
+<style id="new-css-paste-into-style-block">
+
+/* ── COVER LETTER MODAL ───────────────────────────────────── */
+.apply-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:600;display:none;align-items:center;justify-content:center;padding:20px}
+.apply-modal-overlay.open{display:flex}
+.apply-modal-box{background:var(--bg-card);border:1px solid var(--border-hover);border-radius:var(--radius-xl);padding:32px;width:100%;max-width:700px;max-height:88vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,.8);animation:scaleIn .3s ease;position:relative}
+.apply-modal-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;gap:12px}
+.apply-modal-title{font-family:var(--ff-display);font-size:20px;font-weight:800;background:var(--grad-blue);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.3}
+.apply-modal-close{background:none;border:none;color:var(--tx-muted);font-size:22px;cursor:pointer;padding:4px;line-height:1;flex-shrink:0;transition:var(--transition)}
+.apply-modal-close:hover{color:var(--danger)}
+
+/* Tabs inside modal */
+.apply-tabs{display:flex;gap:6px;margin-bottom:20px;background:var(--bg-tab-pill);padding:5px;border-radius:var(--radius-sm);border:1px solid var(--border)}
+.apply-tab-btn{flex:1;padding:9px 14px;border-radius:var(--radius-xs);border:none;background:transparent;color:var(--tx-muted);font-family:var(--ff-body);font-weight:600;font-size:13px;cursor:pointer;transition:var(--transition)}
+.apply-tab-btn.active{background:var(--grad-blue);color:#fff;box-shadow:0 3px 10px rgba(37,99,235,.3)}
+.apply-tab-panel{display:none}
+.apply-tab-panel.active{display:block}
+
+/* Text output area */
+.apply-text-output{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-md);padding:20px;font-family:var(--ff-body);font-size:14px;line-height:1.75;color:var(--tx-primary);white-space:pre-wrap;min-height:200px;max-height:340px;overflow-y:auto;margin-bottom:16px;transition:var(--transition)}
+.apply-subject-chip{display:inline-block;background:rgba(37,99,235,.1);border:1px solid var(--border-hover);color:var(--tx-accent);padding:6px 14px;border-radius:var(--radius-full);font-family:var(--ff-mono);font-size:12px;font-weight:700;margin-bottom:12px;letter-spacing:.5px}
+.apply-actions{display:flex;gap:10px;flex-wrap:wrap}
+.btn-copy{display:inline-flex;align-items:center;gap:6px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);color:#4ade80;border-radius:var(--radius-full);padding:9px 18px;font-size:13px;font-weight:700;font-family:var(--ff-body);cursor:pointer;transition:var(--transition)}
+.btn-copy:hover{background:rgba(34,197,94,.2)}
+.btn-copy.copied{background:rgba(34,197,94,.25);color:#22c55e}
+
+/* Loading shimmer inside modal */
+.apply-loading{text-align:center;padding:50px 20px}
+.apply-loading .spinner{margin:0 auto 16px}
+.apply-loading-text{font-family:var(--ff-mono);font-size:12px;color:var(--tx-muted);letter-spacing:1px}
+
+/* Job card — add industry badge */
+.job-industry{font-size:11px;color:var(--tx-muted);font-family:var(--ff-mono);margin-bottom:10px;font-style:italic}
+
+/* ── YOUTUBE VIDEO GRID ───────────────────────────────────── */
+.yt-section{margin-top:28px}
+.yt-section-title{font-family:var(--ff-display);font-size:17px;font-weight:700;color:var(--tx-primary);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.yt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.yt-card{background:var(--bg-card);border:1px solid var(--border-card);border-radius:var(--radius-md);overflow:hidden;transition:var(--transition)}
+.yt-card:hover{border-color:var(--border-hover);transform:translateY(-3px);box-shadow:0 8px 24px rgba(37,99,235,.12)}
+.yt-iframe-wrap{position:relative;padding-top:56.25%;background:#000;border-radius:var(--radius-sm) var(--radius-sm) 0 0;overflow:hidden}
+.yt-iframe-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:none}
+.yt-card-body{padding:12px 14px}
+.yt-card-title{font-family:var(--ff-display);font-size:13px;font-weight:700;color:var(--tx-primary);line-height:1.35;margin-bottom:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.yt-card-channel{font-size:11px;color:var(--tx-muted);font-family:var(--ff-mono)}
+.yt-loading{text-align:center;padding:24px;color:var(--tx-muted);font-family:var(--ff-mono);font-size:12px}
+.yt-empty{text-align:center;padding:20px;color:var(--tx-muted);font-size:13px;font-style:italic}
+
+/* Skill pill buttons in roadmap header for video search */
+.skill-pill-bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.skill-pill-search{padding:7px 14px;border-radius:var(--radius-full);border:1px solid var(--border);background:var(--bg-tab);color:var(--tx-secondary);font-size:12px;font-weight:600;font-family:var(--ff-body);cursor:pointer;transition:var(--transition)}
+.skill-pill-search:hover{border-color:var(--blue-500);color:var(--tx-primary);background:rgba(37,99,235,.08)}
+.skill-pill-search.loading{opacity:.6;cursor:wait}
+</style>
+
+<!-- ════════════════════════════════════════════════════════════
+     PASTE THIS HTML — Cover Letter Modal  (before </body>)
+════════════════════════════════════════════════════════════════ -->
+<div class="apply-modal-overlay" id="apply-modal">
+  <div class="apply-modal-box">
+    <div class="apply-modal-header">
+      <div>
+        <div class="apply-modal-title" id="apply-modal-title">AI Application Generator</div>
+        <div style="font-size:12px;color:var(--tx-muted);margin-top:4px;font-family:var(--ff-mono);" id="apply-modal-subtitle"></div>
+      </div>
+      <button class="apply-modal-close" onclick="closeApplyModal()">✕</button>
+    </div>
+
+    <!-- Loading state -->
+    <div id="apply-loading" class="apply-loading">
+      <div class="spinner"></div>
+      <div class="apply-loading-text">CRAFTING YOUR PERSONALISED APPLICATION…</div>
+    </div>
+
+    <!-- Generated content -->
+    <div id="apply-content" style="display:none;">
+      <div class="apply-tabs">
+        <button class="apply-tab-btn active" onclick="switchApplyTab('cover',this)">📄 Cover Letter</button>
+        <button class="apply-tab-btn" onclick="switchApplyTab('email',this)">📧 Cold Email</button>
+      </div>
+
+      <!-- Cover Letter Tab -->
+      <div class="apply-tab-panel active" id="apply-tab-cover">
+        <div class="apply-text-output" id="apply-cover-text"></div>
+        <div class="apply-actions">
+          <button class="btn-copy" onclick="copyText('apply-cover-text',this)">📋 Copy Cover Letter</button>
+        </div>
+      </div>
+
+      <!-- Cold Email Tab -->
+      <div class="apply-tab-panel" id="apply-tab-email">
+        <div class="apply-subject-chip" id="apply-email-subject"></div>
+        <div class="apply-text-output" id="apply-email-text"></div>
+        <div class="apply-actions">
+          <button class="btn-copy" onclick="copyText('apply-email-text',this)">📋 Copy Email</button>
+        </div>
+      </div>
+
+      <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+        <a id="apply-real-link" href="#" target="_blank" class="btn" style="width:auto;padding:11px 24px;font-size:13px;">🚀 Proceed to Real Application →</a>
+        <span style="font-size:12px;color:var(--tx-muted);font-family:var(--ff-mono);">Copy text above before clicking</span>
+      </div>
+    </div>
+
+    <!-- Error state -->
+    <div id="apply-error" style="display:none;padding:20px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:var(--radius-md);color:var(--danger);font-size:14px;"></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════
+     PASTE THIS HTML — YouTube section inside #view-roadmap
+     (add AFTER the roadmap-output div)
+════════════════════════════════════════════════════════════════ -->
+<div id="yt-section-roadmap" class="yt-section" style="display:none;">
+  <div class="yt-section-title">▶️ Recommended Tutorial Videos</div>
+  <div class="skill-pill-bar" id="yt-skill-pills"></div>
+  <div class="yt-grid" id="yt-grid-roadmap">
+    <div class="yt-loading">Select a skill above to load videos…</div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════
+     PASTE THIS JAVASCRIPT — add inside your <script> block
+     (replace the existing loadJobs function and add the rest)
+════════════════════════════════════════════════════════════════ -->
+<script id="new-js-paste-into-script-block">
+
+// ── COVER LETTER MODAL ────────────────────────────────────────
+let currentApplyJob = null;
+
+async function openApplyModal(job) {
+  currentApplyJob = job;
+  $('apply-modal-title').textContent   = `AI Application — ${job.Role}`;
+  $('apply-modal-subtitle').textContent= `${job.Company} · ${job.Location}`;
+  $('apply-loading').style.display     = 'block';
+  $('apply-content').style.display     = 'none';
+  $('apply-error').style.display       = 'none';
+  $('apply-real-link').href            = job.Apply_Link || '#';
+  $('apply-modal').classList.add('open');
+
+  // Collect student skills from cert scanner tags
+  const tags     = Array.from(document.querySelectorAll('#skill-tags .skill-tag')).map(t=>t.textContent).join(', ');
+
+  try {
+    const res  = await fetch(`${API_BASE}/generate_application`, {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        job_title:      job.Role,
+        company:        job.Company,
+        skills_required:job.Skills_Required,
+        industry:       job.Industry || '',
+        name:           userProfile.name,
+        gpa:            userProfile.gpa,
+        standard:       userProfile.standard,
+        goals:          userProfile.goals || '',
+        college:        userProfile.college || '',
+        student_skills: tags
+      })
+    });
+    const data = await res.json();
+    if (data.status === 'error') throw new Error(data.message);
+
+    $('apply-cover-text').textContent  = data.cover_letter    || '';
+    $('apply-email-subject').textContent = `Subject: ${data.cold_email_subject || ''}`;
+    $('apply-email-text').textContent  = data.cold_email_body || '';
+
+    $('apply-loading').style.display   = 'none';
+    $('apply-content').style.display   = 'block';
+  } catch(e) {
+    $('apply-loading').style.display   = 'none';
+    $('apply-error').style.display     = 'block';
+    $('apply-error').textContent       = `⚠️ ${e.message || 'Could not generate application. Is backend running?'}`;
+  }
+}
+
+function closeApplyModal() {
+  $('apply-modal').classList.remove('open');
+  currentApplyJob = null;
+}
+
+function switchApplyTab(tab, btn) {
+  document.querySelectorAll('.apply-tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.apply-tab-panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  $(`apply-tab-${tab}`).classList.add('active');
+}
+
+function copyText(elId, btn) {
+  const text = $(elId)?.textContent || '';
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.innerHTML;
+    btn.innerHTML = '✅ Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('copied'); }, 2000);
+  }).catch(() => alert('Copy failed — please select and copy manually.'));
+}
+
+// Close modal on overlay click
+document.addEventListener('DOMContentLoaded', () => {
+  const ov = $('apply-modal');
+  if(ov) ov.addEventListener('click', e => { if(e.target===ov) closeApplyModal(); });
+  const pov = $('profile-modal');
+  if(pov) pov.addEventListener('click', e => { if(e.target===pov) closeProfileModal(); });
+});
+
+// ── JOBS (updated — uses openApplyModal instead of direct link) ──
+async function loadJobs() {
+  const grid    = $('jobs-grid'), countEl = $('jobs-count');
+  if(!grid) return;
+  const role = $('job-filter-role')?.value || 'All';
+  const type = $('job-filter-type')?.value || 'All';
+  const loc  = $('job-filter-loc')?.value  || 'All';
+  grid.innerHTML = `<div class="loading-state" style="grid-column:1/-1;"><div class="spinner"></div><div class="loading-text">FETCHING OPPORTUNITIES…</div></div>`;
+  try {
+    const res  = await fetch(`${API_BASE}/get_jobs`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({role,type,location:loc})
+    });
+    const data = await res.json();
+    const jobs = data.jobs || [];
+    if(countEl) countEl.textContent = `${jobs.length} job${jobs.length!==1?'s':''} found`;
+    if(!jobs.length) {
+      grid.innerHTML = `<div class="card" style="grid-column:1/-1;text-align:center;padding:40px;color:var(--tx-muted);">No jobs found for these filters.</div>`;
+      return;
+    }
+    // Store jobs globally so the modal can access full data
+    window._lastJobs = jobs;
+    grid.innerHTML = jobs.map((j,i) => `
+      <div class="job-card">
+        <span class="job-logo">${j.Logo_Emoji||'🏢'}</span>
+        <div class="job-role">${j.Role}</div>
+        <div class="job-company">${j.Company}</div>
+        ${j.Industry ? `<div class="job-industry">🏭 ${j.Industry}</div>` : ''}
+        <div class="job-meta">
+          <span class="job-chip">${j.Location}</span>
+          <span class="job-chip ${j.Type==='Internship'?'green':'blue'}">${j.Type}</span>
+          <span class="job-chip">Posted ${j.Posted||'Recently'}</span>
+        </div>
+        <div class="job-salary">💰 ${j.Salary}</div>
+        <div class="job-skills">🛠 ${j.Skills_Required}</div>
+        <div style="display:flex;gap:8px;margin-top:4px;">
+          <button class="btn-apply" style="flex:1;" onclick="openApplyModal(window._lastJobs[${i}])">
+            ✉️ AI Cover Letter
+          </button>
+          <a class="btn-apply" href="${j.Apply_Link}" target="_blank"
+             style="flex:1;background:transparent;border:1.5px solid var(--border-hover);color:var(--tx-accent);text-decoration:none;">
+            🔗 Apply
+          </a>
+        </div>
+      </div>`).join('');
+  } catch(e) {
+    grid.innerHTML = `<div class="card" style="grid-column:1/-1;text-align:center;padding:30px;color:var(--danger);">⚠️ Could not load jobs. Is backend running?</div>`;
+  }
+}
+
+// ── YOUTUBE VIDEO GRID ────────────────────────────────────────
+const YT_SKILL_SHORTCUTS = {
+  'Software Engineer': ['Python', 'DSA', 'React', 'System Design'],
+  'Data Scientist':    ['Pandas', 'Machine Learning', 'SQL', 'Deep Learning'],
+  'Cybersecurity Analyst': ['Linux Security', 'Ethical Hacking', 'Networking'],
+  'Cloud Architect':   ['AWS', 'Azure', 'Kubernetes', 'Terraform'],
+  'AI Engineer':       ['PyTorch', 'LangChain', 'RAG', 'Prompt Engineering'],
+};
+
+function buildYtSkillPills(role) {
+  const pills = $('yt-skill-pills');
+  if(!pills) return;
+  const skills = YT_SKILL_SHORTCUTS[role] || role.split(' ').slice(0,3);
+  pills.innerHTML = skills.map(s =>
+    `<button class="skill-pill-search" onclick="loadYtVideos('${s}','${role}',this)">${s}</button>`
+  ).join('') +
+  `<button class="skill-pill-search" onclick="loadYtVideos('','${role}',this)">📺 Full Course</button>`;
+}
+
+async function loadYtVideos(skill, role, btn) {
+  const grid = $('yt-grid-roadmap');
+  if(!grid) return;
+
+  // Mark active pill
+  document.querySelectorAll('.skill-pill-search').forEach(b=>b.classList.remove('loading'));
+  if(btn){ btn.classList.add('loading'); }
+
+  grid.innerHTML = `<div class="yt-loading"><div class="spinner" style="width:32px;height:32px;border-width:2px;"></div><br>Searching YouTube…</div>`;
+
+  try {
+    const res  = await fetch(`${API_BASE}/get_youtube_videos`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({skill, role})
+    });
+    const data = await res.json();
+    const vids = data.videos || [];
+
+    if(!vids.length) {
+      grid.innerHTML = `<div class="yt-empty">No videos found. Try another skill, or add your YouTube API key to api.py.</div>`;
+    } else {
+      grid.innerHTML = vids.map(v => `
+        <div class="yt-card">
+          <div class="yt-iframe-wrap">
+            <iframe src="${v.embed_url}?rel=0&modestbranding=1"
+                    title="${v.title.replace(/"/g,'')}"
+                    allow="accelerometer; autoplay; encrypted-media; gyroscope"
+                    allowfullscreen loading="lazy"></iframe>
+          </div>
+          <div class="yt-card-body">
+            <div class="yt-card-title">${v.title}</div>
+            <div class="yt-card-channel">📺 ${v.channel}</div>
+          </div>
+        </div>`).join('');
+    }
+  } catch(e) {
+    grid.innerHTML = `<div class="yt-empty" style="color:var(--danger);">⚠️ Could not load videos.</div>`;
+  } finally {
+    if(btn) btn.classList.remove('loading');
+  }
+}
+
+// ── Trigger YouTube section after roadmap is generated ────────
+// Wrap the existing generateRoadmap call — patch it here
+const _origGenerateRoadmap = generateRoadmap;
+generateRoadmap = async function() {
+  await _origGenerateRoadmap.call(this);
+  const role = $('target-role')?.value || '';
+  const ytSec = $('yt-section-roadmap');
+  if(ytSec && role) {
+    ytSec.style.display = 'block';
+    buildYtSkillPills(role);
+    // Auto-load videos for the role immediately
+    loadYtVideos('', role, null);
+  }
+};
+</script>
