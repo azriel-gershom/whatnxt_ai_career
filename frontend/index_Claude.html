@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>WhatNxt – Enterprise AI Career Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   DESIGN SYSTEM — WHATNXT ENTERPRISE AI PORTAL
+============================================================ */
+:root {
+  /* === DARK MODE (default) === */
+  --bg-primary:    #050b18;
+  --bg-secondary:  #080f1f;
+  --bg-card:       rgba(10,18,35,0.85);
+  --bg-card-hover: rgba(14,24,46,0.95);
+  --bg-glass:      rgba(8,15,30,0.6);
+  --bg-input:      rgba(6,12,25,0.9);
+  --bg-nav:        rgba(5,11,24,0.92);
+  --bg-tab:        rgba(8,15,30,0.8);
+  --bg-tab-pill:   rgba(5,10,20,0.95);
+
+  --blue-50:  #eff6ff;
+  --blue-100: #dbeafe;
+  --blue-400: #60a5fa;
+  --blue-500: #3b82f6;
+  --blue-600: #2563eb;
+  --blue-700: #1d4ed8;
+  --blue-900: #1e3a8a;
+
+  --cyan-400: #22d3ee;
+  --cyan-500: #06b6d4;
+
+  --tx-primary:   #f0f6ff;
+  --tx-secondary: #94a3b8;
+  --tx-muted:     #4a5568;
+  --tx-accent:    #60a5fa;
+
+  --border:       rgba(59,130,246,0.15);
+  --border-hover: rgba(59,130,246,0.4);
+  --border-focus: rgba(59,130,246,0.7);
+  --border-card:  rgba(59,130,246,0.12);
+
+  --shadow-card:  0 4px 24px rgba(0,0,0,0.5), 0 1px 0 rgba(59,130,246,0.08) inset;
+  --shadow-btn:   0 8px 32px rgba(37,99,235,0.45);
+  --shadow-input: 0 0 0 3px rgba(59,130,246,0.15);
+  --shadow-nav:   0 1px 0 rgba(59,130,246,0.1);
+
+  --grad-blue:  linear-gradient(135deg, #2563eb 0%, #06b6d4 100%);
+  --grad-blue2: linear-gradient(135deg, #1d4ed8 0%, #0891b2 100%);
+  --grad-mesh:  radial-gradient(ellipse at 20% 20%, rgba(37,99,235,0.18) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 80%, rgba(6,182,212,0.12) 0%, transparent 60%),
+                radial-gradient(ellipse at 50% 50%, rgba(29,78,216,0.08) 0%, transparent 80%);
+  --grad-avatar: linear-gradient(135deg, #2563eb, #06b6d4);
+  --grad-fab:    linear-gradient(135deg, #1d4ed8, #0891b2);
+
+  --chip-bg:     rgba(34,197,94,0.1);
+  --chip-text:   #4ade80;
+  --chip-border: rgba(34,197,94,0.3);
+
+  --success: #22c55e;
+  --danger:  #ef4444;
+
+  --ff-display: 'Outfit', sans-serif;
+  --ff-body:    'Space Grotesk', sans-serif;
+  --ff-mono:    'JetBrains Mono', monospace;
+
+  --radius-xs:   6px;
+  --radius-sm:   10px;
+  --radius-md:   16px;
+  --radius-lg:   22px;
+  --radius-xl:   32px;
+  --radius-full: 9999px;
+
+  --transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* === LIGHT MODE === */
+[data-theme="light"] {
+  --bg-primary:    #f0f4ff;
+  --bg-secondary:  #e8eeff;
+  --bg-card:       rgba(255,255,255,0.92);
+  --bg-card-hover: rgba(255,255,255,1);
+  --bg-glass:      rgba(240,244,255,0.85);
+  --bg-input:      rgba(255,255,255,0.95);
+  --bg-nav:        rgba(240,244,255,0.95);
+  --bg-tab:        rgba(235,240,255,0.9);
+  --bg-tab-pill:   rgba(220,230,255,0.8);
+
+  --tx-primary:   #0f172a;
+  --tx-secondary: #334155;
+  --tx-muted:     #64748b;
+  --tx-accent:    #2563eb;
+
+  --border:       rgba(37,99,235,0.15);
+  --border-hover: rgba(37,99,235,0.4);
+  --border-focus: rgba(37,99,235,0.6);
+  --border-card:  rgba(37,99,235,0.1);
+
+  --shadow-card:  0 4px 24px rgba(37,99,235,0.08), 0 1px 3px rgba(0,0,0,0.06);
+  --shadow-btn:   0 8px 24px rgba(37,99,235,0.3);
+  --shadow-input: 0 0 0 3px rgba(37,99,235,0.12);
+  --shadow-nav:   0 1px 0 rgba(37,99,235,0.12), 0 2px 16px rgba(37,99,235,0.06);
+
+  --grad-mesh:    radial-gradient(ellipse at 20% 20%, rgba(37,99,235,0.08) 0%, transparent 60%),
+                  radial-gradient(ellipse at 80% 80%, rgba(6,182,212,0.06) 0%, transparent 60%),
+                  radial-gradient(ellipse at 50% 0%, rgba(59,130,246,0.05) 0%, transparent 60%);
+
+  --chip-bg:     rgba(34,197,94,0.08);
+  --chip-text:   #16a34a;
+  --chip-border: rgba(34,197,94,0.25);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--ff-body);background:var(--bg-primary);color:var(--tx-primary);overflow-x:hidden;min-height:100vh;transition:background .4s,color .4s;line-height:1.6}
+.bg-mesh{position:fixed;inset:0;z-index:0;background:var(--grad-mesh);pointer-events:none}
+.bg-grid{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;opacity:.025;
+  background-image:linear-gradient(rgba(59,130,246,1) 1px,transparent 1px),linear-gradient(90deg,rgba(59,130,246,1) 1px,transparent 1px);background-size:60px 60px}
+[data-theme="light"] .bg-grid{opacity:.04}
+.bg-orb{position:fixed;border-radius:50%;pointer-events:none;z-index:0;filter:blur(80px);animation:orbFloat 12s ease-in-out infinite}
+.bg-orb-1{width:500px;height:500px;background:radial-gradient(circle,rgba(37,99,235,.12),transparent 70%);top:-200px;left:-100px}
+.bg-orb-2{width:400px;height:400px;background:radial-gradient(circle,rgba(6,182,212,.08),transparent 70%);bottom:-150px;right:-100px;animation-delay:-6s}
+.bg-orb-3{width:300px;height:300px;background:radial-gradient(circle,rgba(37,99,235,.06),transparent 70%);top:40%;left:40%;animation-delay:-3s}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes orbFloat{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,-20px) scale(1.05)}66%{transform:translate(-20px,30px) scale(.95)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse-ring{0%{box-shadow:0 0 0 0 rgba(37,99,235,.5)}70%{box-shadow:0 0 0 16px rgba(37,99,235,0)}100%{box-shadow:0 0 0 0 rgba(37,99,235,0)}}
+@keyframes scaleIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:translateX(0)}}
+@keyframes tagPop{from{opacity:0;transform:scale(.7) translateY(6px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes barFill{from{width:0}to{width:var(--w)}}
+@keyframes shimmer{from{background-position:-200% center}to{background-position:200% center}}
+
+/* ── CARD ── */
+.card{position:relative;background:var(--bg-card);backdrop-filter:blur(16px) saturate(1.5);
+  -webkit-backdrop-filter:blur(16px) saturate(1.5);border:1px solid var(--border-card);
+  border-radius:var(--radius-lg);padding:28px;box-shadow:var(--shadow-card);
+  transition:var(--transition);animation:fadeUp .5s ease both;overflow:hidden}
+.card::before{content:'';position:absolute;inset:0;border-radius:var(--radius-lg);
+  background:linear-gradient(135deg,rgba(59,130,246,.04) 0%,transparent 60%);pointer-events:none}
+.card:hover{transform:translateY(-4px);border-color:var(--border-hover);box-shadow:0 12px 40px rgba(0,0,0,.4),0 0 0 1px rgba(59,130,246,.15)}
+[data-theme="light"] .card:hover{box-shadow:0 12px 40px rgba(37,99,235,.12),0 0 0 1px rgba(37,99,235,.15)}
+
+/* ── INPUTS ── */
+.inp{width:100%;padding:13px 16px;background:var(--bg-input);border:1px solid var(--border);
+  border-radius:var(--radius-sm);color:var(--tx-primary);font-family:var(--ff-body);font-size:14px;
+  font-weight:500;outline:none;transition:var(--transition);margin-bottom:16px;appearance:none;-webkit-appearance:none}
+.inp:focus{border-color:var(--blue-500);box-shadow:var(--shadow-input)}
+.inp::placeholder{color:var(--tx-muted);font-weight:400}
+select.inp{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2360a5fa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 14px center;padding-right:40px;cursor:pointer}
+select.inp option{background:var(--bg-primary);color:var(--tx-primary)}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  background:var(--grad-blue);color:#fff;border:none;border-radius:var(--radius-full);
+  padding:14px 28px;font-family:var(--ff-body);font-weight:700;font-size:15px;
+  cursor:pointer;transition:var(--transition);width:100%;position:relative;overflow:hidden}
+.btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.15) 0%,transparent 60%);opacity:0;transition:opacity .25s}
+.btn:hover::before{opacity:1}
+.btn:hover{transform:translateY(-2px);box-shadow:var(--shadow-btn)}
+.btn:active{transform:translateY(0)}
+.btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.btn-outline{background:transparent;border:1px solid var(--border-hover);color:var(--tx-accent)}
+.btn-outline:hover{background:rgba(59,130,246,.08);border-color:var(--blue-500);box-shadow:none}
+.btn-danger{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);color:#f87171}
+.btn-danger:hover{background:rgba(239,68,68,.18);box-shadow:0 4px 16px rgba(239,68,68,.2)}
+.btn-sm{padding:9px 20px;font-size:13px}
+.btn-purple{background:linear-gradient(135deg,#7c3aed,#db2777)}
+
+/* ── LABELS ── */
+.lbl{display:block;font-size:11px;font-weight:700;color:var(--tx-muted);margin-bottom:8px;
+  text-transform:uppercase;letter-spacing:1.8px;font-family:var(--ff-mono)}
+
+/* ── NAV ── */
+.nav{background:var(--bg-nav);backdrop-filter:blur(20px) saturate(1.8);
+  -webkit-backdrop-filter:blur(20px) saturate(1.8);padding:0 40px;display:flex;
+  justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:200;height:68px;transition:background .4s,border-color .4s}
+.nav-left{display:flex;align-items:center;gap:12px}
+.nav-right{display:flex;align-items:center;gap:12px}
+.logo{font-family:var(--ff-display);font-size:24px;font-weight:800;
+  background:var(--grad-blue);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.logo-badge{font-family:var(--ff-mono);font-size:10px;color:var(--tx-muted);
+  background:var(--bg-tab-pill);border:1px solid var(--border);padding:3px 8px;
+  border-radius:var(--radius-full);letter-spacing:1px}
+.status-dot{width:8px;height:8px;background:var(--success);border-radius:50%;
+  box-shadow:0 0 0 2px rgba(34,197,94,.25);animation:pulse-ring 2.5s infinite;flex-shrink:0}
+.theme-toggle{width:44px;height:24px;background:var(--bg-tab-pill);border:1px solid var(--border);
+  border-radius:var(--radius-full);position:relative;cursor:pointer;transition:var(--transition);flex-shrink:0}
+.theme-toggle-thumb{position:absolute;width:18px;height:18px;background:var(--grad-blue);border-radius:50%;
+  top:2px;left:2px;transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;align-items:center;justify-content:center;font-size:10px}
+[data-theme="light"] .theme-toggle-thumb{transform:translateX(20px)}
+.theme-label{font-size:11px;font-weight:600;color:var(--tx-muted);font-family:var(--ff-mono)}
+.info-chip{display:inline-flex;align-items:center;gap:6px;font-family:var(--ff-mono);font-size:11px;
+  font-weight:600;color:var(--tx-secondary);background:var(--bg-tab);border:1px solid var(--border);
+  padding:5px 12px;border-radius:var(--radius-full);letter-spacing:.5px}
+
+/* ── LAYOUT ── */
+.layout{max-width:1380px;margin:36px auto;padding:0 24px;display:grid;grid-template-columns:300px 1fr;gap:28px}
+.profile-sticky{height:fit-content;position:sticky;top:96px}
+
+/* ── AVATAR / PROFILE ── */
+.avatar{width:88px;height:88px;border-radius:50%;background:linear-gradient(135deg,#2563eb,#06b6d4);
+  margin:0 auto 18px;display:flex;align-items:center;justify-content:center;font-size:36px;
+  font-weight:800;font-family:var(--ff-display);color:#fff;
+  box-shadow:0 8px 32px rgba(37,99,235,.4),0 0 0 3px rgba(37,99,235,.2);position:relative;transition:var(--transition)}
+.avatar::after{content:'';position:absolute;inset:-4px;border-radius:50%;border:2px solid transparent;
+  background:linear-gradient(135deg,rgba(59,130,246,.6),rgba(6,182,212,.3)) border-box;
+  -webkit-mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:destination-out;mask-composite:exclude}
+.profile-name{font-family:var(--ff-display);font-size:20px;font-weight:700;text-align:center;margin-bottom:4px}
+.profile-year{color:var(--tx-accent);font-weight:700;font-size:12px;text-align:center;
+  letter-spacing:1.2px;text-transform:uppercase;font-family:var(--ff-mono)}
+.profile-gpa{color:var(--tx-secondary);font-size:13px;margin-top:10px;background:var(--bg-tab);
+  border:1px solid var(--border);padding:6px 14px;border-radius:var(--radius-full);
+  display:inline-block;font-family:var(--ff-mono);font-weight:600}
+.profile-divider{border:0;border-top:1px solid var(--border);margin:22px 0}
+.dropzone-label{display:block;border:1.5px dashed var(--blue-500);border-radius:var(--radius-md);
+  padding:28px 16px;text-align:center;background:rgba(37,99,235,.04);cursor:pointer;
+  transition:var(--transition);margin-bottom:14px}
+.dropzone-label:hover{background:rgba(37,99,235,.08);border-color:var(--cyan-400);transform:scale(1.01)}
+.dropzone-icon{font-size:28px;margin-bottom:8px;display:block}
+.dropzone-text{font-size:11px;font-weight:700;color:var(--tx-muted);text-transform:uppercase;
+  letter-spacing:1.5px;font-family:var(--ff-mono)}
+#skill-tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}
+.skill-tag{background:var(--chip-bg);color:var(--chip-text);border:1px solid var(--chip-border);
+  padding:5px 11px;border-radius:var(--radius-full);font-size:10px;font-weight:700;
+  letter-spacing:1px;text-transform:uppercase;font-family:var(--ff-mono);animation:tagPop .3s cubic-bezier(.34,1.56,.64,1) both}
+
+/* ── TABS ── */
+.tab-container{display:flex;gap:6px;margin-bottom:24px;background:var(--bg-tab-pill);
+  padding:5px;border-radius:var(--radius-sm);width:100%;border:1px solid var(--border);flex-wrap:wrap}
+.tab-btn{padding:10px 18px;border-radius:var(--radius-xs);border:none;background:transparent;
+  color:var(--tx-muted);font-family:var(--ff-body);font-weight:600;font-size:13px;
+  cursor:pointer;transition:var(--transition);flex:1;white-space:nowrap}
+.tab-btn:hover{color:var(--tx-primary)}
+.tab-btn.active{background:var(--grad-blue);color:#fff;box-shadow:0 4px 16px rgba(37,99,235,.35)}
+
+/* ── SECTION TITLES ── */
+.section-title{font-family:var(--ff-display);font-size:28px;font-weight:800;letter-spacing:-.5px;
+  background:linear-gradient(135deg,var(--tx-primary) 0%,var(--tx-accent) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px}
+.section-sub{color:var(--tx-secondary);font-size:14px;line-height:1.7;margin-bottom:24px}
+
+/* ── LOADING ── */
+.loading-state{text-align:center;padding:60px 30px}
+.spinner{width:48px;height:48px;border:3px solid rgba(59,130,246,.15);border-top-color:var(--blue-500);
+  border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 20px}
+.loading-text{font-family:var(--ff-mono);font-size:13px;color:var(--tx-muted);letter-spacing:1px}
+
+/* ── ROADMAP / RESUME OUTPUT ── */
+#roadmap-output{border:1px solid var(--border-hover);box-shadow:0 0 40px rgba(37,99,235,.1);animation:scaleIn .4s ease}
+#roadmap-content{line-height:1.85;font-size:15px}
+#resume-output{background:#fff!important;color:#000!important;animation:fadeIn .4s ease}
+.resume-hero{text-align:center;padding:60px 30px}
+.resume-hero-icon{font-size:64px;display:block;margin-bottom:20px;animation:float 3s ease-in-out infinite}
+.resume-hero-title{font-family:var(--ff-display);font-size:34px;font-weight:800;
+  background:var(--grad-blue);-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;margin-bottom:14px}
+.resume-hero-sub{color:var(--tx-secondary);font-size:14px;max-width:480px;margin:0 auto 32px;line-height:1.7}
+
+/* ── QUIZ ── */
+.quiz-q-card{background:var(--bg-tab);border:1px solid var(--border);border-radius:var(--radius-md);
+  padding:24px;margin-bottom:20px;transition:var(--transition)}
+.quiz-question{font-size:16px;font-weight:700;margin-bottom:16px;color:var(--tx-primary);line-height:1.5}
+.quiz-option{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:var(--radius-sm);
+  border:1px solid var(--border);background:var(--bg-input);cursor:pointer;
+  transition:var(--transition);margin-bottom:8px;font-size:14px;font-weight:500;color:var(--tx-secondary)}
+.quiz-option:hover{border-color:var(--blue-500);color:var(--tx-primary);background:rgba(59,130,246,.06)}
+.quiz-option.selected{border-color:var(--blue-500);background:rgba(59,130,246,.12);color:var(--tx-primary)}
+.quiz-option.correct{border-color:var(--success);background:rgba(34,197,94,.1);color:#4ade80}
+.quiz-option.wrong{border-color:var(--danger);background:rgba(239,68,68,.1);color:#f87171}
+.quiz-option-key{width:28px;height:28px;border-radius:50%;background:var(--bg-tab-pill);
+  border:1px solid var(--border);display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;font-family:var(--ff-mono);flex-shrink:0}
+.quiz-explanation{margin-top:12px;padding:10px 14px;background:rgba(6,182,212,.08);
+  border-left:3px solid var(--cyan-500);border-radius:0 var(--radius-xs) var(--radius-xs) 0;
+  font-size:13px;color:var(--tx-secondary);display:none}
+.score-bar-wrap{background:var(--bg-tab);border-radius:var(--radius-full);height:10px;overflow:hidden;margin:8px 0}
+.score-bar{height:100%;border-radius:var(--radius-full);background:var(--grad-blue);
+  width:0;transition:width 1s cubic-bezier(.4,0,.2,1)}
+.quiz-result-card{background:linear-gradient(135deg,rgba(37,99,235,.15),rgba(6,182,212,.08));
+  border:1px solid var(--border-hover);border-radius:var(--radius-lg);padding:32px;text-align:center}
+.result-score{font-family:var(--ff-display);font-size:56px;font-weight:900;
+  background:var(--grad-blue);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.result-grade{font-size:20px;font-weight:700;margin-top:8px}
+.result-next{color:var(--tx-secondary);font-size:14px;margin-top:8px;line-height:1.6}
+
+/* ── JOBS ── */
+.job-card{background:var(--bg-tab);border:1px solid var(--border);border-radius:var(--radius-md);
+  padding:20px;transition:var(--transition);cursor:default}
+.job-card:hover{border-color:var(--border-hover);transform:translateY(-3px);box-shadow:0 8px 24px rgba(37,99,235,.12)}
+.job-header{display:flex;align-items:flex-start;gap:14px;margin-bottom:14px}
+.job-emoji{font-size:32px;flex-shrink:0;width:52px;height:52px;display:flex;align-items:center;
+  justify-content:center;background:var(--bg-input);border-radius:var(--radius-sm);border:1px solid var(--border)}
+.job-title{font-size:16px;font-weight:700;color:var(--tx-primary);margin-bottom:3px}
+.job-company{font-size:13px;color:var(--tx-secondary)}
+.job-meta{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px}
+.job-chip{padding:4px 10px;border-radius:var(--radius-full);font-size:11px;font-weight:600;
+  font-family:var(--ff-mono);border:1px solid}
+.chip-loc{background:rgba(59,130,246,.1);color:var(--blue-400);border-color:rgba(59,130,246,.25)}
+.chip-type{background:rgba(34,197,94,.1);color:#4ade80;border-color:rgba(34,197,94,.25)}
+.chip-sal{background:rgba(251,191,36,.1);color:#fbbf24;border-color:rgba(251,191,36,.25)}
+.chip-exp{background:rgba(139,92,246,.1);color:#a78bfa;border-color:rgba(139,92,246,.25)}
+.job-skills{font-size:12px;color:var(--tx-muted);margin-bottom:14px;line-height:1.6}
+.jobs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+.jobs-filter{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:24px}
+.jobs-filter select.inp{margin-bottom:0;width:auto;min-width:160px}
+
+/* ── COURSES ── */
+.courses-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.course-card{background:var(--bg-tab);border:1px solid var(--border);border-radius:var(--radius-md);
+  padding:20px;transition:var(--transition)}
+.course-card:hover{border-color:var(--border-hover);transform:translateY(-3px)}
+.course-platform{font-size:10px;font-weight:700;font-family:var(--ff-mono);letter-spacing:1.5px;
+  text-transform:uppercase;color:var(--tx-muted);margin-bottom:8px}
+.course-name{font-size:15px;font-weight:700;color:var(--tx-primary);margin-bottom:8px;line-height:1.4}
+.course-meta{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.course-chip{padding:3px 9px;border-radius:var(--radius-full);font-size:10px;font-weight:700;
+  font-family:var(--ff-mono);border:1px solid}
+.c-free{background:rgba(34,197,94,.1);color:#4ade80;border-color:rgba(34,197,94,.25)}
+.c-paid{background:rgba(251,191,36,.1);color:#fbbf24;border-color:rgba(251,191,36,.25)}
+.c-level{background:rgba(59,130,246,.1);color:var(--blue-400);border-color:rgba(59,130,246,.25)}
+.c-dur{background:rgba(139,92,246,.1);color:#a78bfa;border-color:rgba(139,92,246,.25)}
+.c-rating{font-size:12px;color:#fbbf24;font-weight:700;margin-top:4px}
+
+/* ── PATH 2 / PSYCHOMETRIC ── */
+.psycho-option{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:var(--radius-sm);
+  border:1.5px solid var(--border);background:var(--bg-input);cursor:pointer;
+  transition:var(--transition);margin-bottom:10px;font-size:14px;font-weight:500}
+.psycho-option:hover{border-color:var(--blue-500);background:rgba(59,130,246,.06)}
+.psycho-option.selected{border-color:var(--cyan-500);background:rgba(6,182,212,.1);color:var(--tx-primary)}
+.psycho-letter{width:30px;height:30px;border-radius:50%;background:var(--bg-tab-pill);
+  border:1px solid var(--border);display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;font-family:var(--ff-mono);flex-shrink:0}
+.step-indicator{display:flex;gap:6px;margin-bottom:24px;align-items:center}
+.step-dot{width:10px;height:10px;border-radius:50%;background:var(--border);transition:var(--transition)}
+.step-dot.done{background:var(--success)}
+.step-dot.active{background:var(--blue-500);box-shadow:0 0 0 3px rgba(59,130,246,.2)}
+.career-result-html{line-height:1.8;font-size:15px}
+
+/* ── LOGIN ── */
+#pg-login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;position:relative;z-index:1}
+.login-card{width:100%;max-width:480px;animation:scaleIn .5s cubic-bezier(.34,1.56,.64,1)}
+.login-header{text-align:center;margin-bottom:32px}
+.login-icon{font-size:52px;display:block;margin-bottom:16px;animation:float 4s ease-in-out infinite;filter:drop-shadow(0 8px 16px rgba(37,99,235,.4))}
+.login-logo{font-family:var(--ff-display);font-size:40px;font-weight:900;background:var(--grad-blue);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:block;margin-bottom:6px}
+.login-tagline{font-family:var(--ff-mono);color:var(--cyan-500);font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase}
+.form-row{display:flex;gap:14px}
+.form-row>div{flex:1}
+.auth-toggle{text-align:center;margin-top:20px;font-size:13px;color:var(--tx-muted)}
+.auth-toggle-link{color:var(--tx-accent);cursor:pointer;font-weight:700;border-bottom:1px solid rgba(59,130,246,.4)}
+.auth-toggle-link:hover{border-color:var(--blue-500)}
+
+/* ── CHATBOT ── */
+.chat-fab{position:fixed;bottom:36px;right:36px;width:60px;height:60px;border-radius:50%;
+  background:linear-gradient(135deg,#1d4ed8,#0891b2);display:flex;align-items:center;
+  justify-content:center;font-size:26px;cursor:pointer;animation:pulse-ring 3s infinite;
+  z-index:999;border:none;box-shadow:0 8px 32px rgba(37,99,235,.45);transition:var(--transition)}
+.chat-fab:hover{transform:scale(1.1)}
+.chat-window{position:fixed;bottom:112px;right:36px;width:370px;height:540px;background:var(--bg-card);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--border-hover);
+  border-radius:var(--radius-xl);display:none;flex-direction:column;overflow:hidden;z-index:999;
+  box-shadow:0 20px 60px rgba(0,0,0,.6);animation:fadeUp .3s ease}
+.chat-header{background:linear-gradient(135deg,rgba(29,78,216,.6),rgba(8,145,178,.4));padding:16px 20px;
+  border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.chat-header-info{display:flex;align-items:center;gap:10px}
+.chat-bot-name{font-family:var(--ff-display);font-weight:700;font-size:15px;color:#fff}
+.chat-body{flex:1;padding:16px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;
+  scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+.msg{padding:11px 15px;border-radius:var(--radius-md);max-width:88%;font-size:13.5px;line-height:1.55;animation:slideIn .25s ease}
+.msg-ai{background:var(--bg-tab);border:1px solid var(--border);align-self:flex-start;border-bottom-left-radius:4px;color:var(--tx-primary)}
+.msg-user{background:var(--grad-blue);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+.chat-footer{padding:12px;background:var(--bg-input);border-top:1px solid var(--border);display:flex;gap:8px;align-items:center}
+.chat-input{flex:1;padding:10px 14px;background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--radius-full);color:var(--tx-primary);font-family:var(--ff-body);font-size:13px;outline:none;transition:var(--transition)}
+.chat-input:focus{border-color:var(--blue-500);box-shadow:0 0 0 2px rgba(59,130,246,.12)}
+.chat-send{width:38px;height:38px;border-radius:50%;background:var(--grad-blue);border:none;color:#fff;
+  font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--transition);flex-shrink:0}
+.chat-send:hover{transform:scale(1.1);box-shadow:0 4px 12px rgba(37,99,235,.4)}
+
+/* ── EMPTY STATE ── */
+.empty-state{text-align:center;padding:60px 30px;color:var(--tx-muted)}
+.empty-icon{font-size:48px;display:block;margin-bottom:16px;opacity:.5}
+.empty-text{font-size:15px;font-weight:600;margin-bottom:8px;color:var(--tx-secondary)}
+.empty-sub{font-size:13px}
+
+/* ── SCAN SECTION ── */
+.scan-section-title{font-family:var(--ff-display);font-size:13px;font-weight:700;color:var(--tx-primary);
+  margin-bottom:12px;display:flex;align-items:center;gap:7px}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){.layout{grid-template-columns:1fr}.profile-sticky{position:static}.nav{padding:0 20px}.chat-window{right:16px;width:calc(100vw - 32px)}.chat-fab{right:20px;bottom:20px}}
+@media(max-width:600px){.tab-btn{font-size:11px;padding:9px 10px}.form-row{flex-direction:column;gap:0}}
+</style>
+</head>
+<body>
+<div class="bg-mesh"></div>
+<div class="bg-grid"></div>
+<div class="bg-orb bg-orb-1"></div>
+<div class="bg-orb bg-orb-2"></div>
+<div class="bg-orb bg-orb-3"></div>
+
+<!-- ════════════════════════════════
+     LOGIN PAGE
+════════════════════════════════ -->
+<div id="pg-login">
+  <div class="card login-card">
+    <div class="login-header">
+      <span class="login-icon">🚀</span>
+      <span class="login-logo">WhatNxt</span>
+      <span class="login-tagline">Enterprise AI Career Portal</span>
+    </div>
+    <div id="form-fields">
+      <label class="lbl">Username</label>
+      <input class="inp" id="auth-user" placeholder="Enter your username" autocomplete="username">
+      <label class="lbl">Password</label>
+      <input class="inp" type="password" id="auth-pass" placeholder="••••••••" autocomplete="current-password">
+      <div id="signup-extra">
+        <div class="form-row">
+          <div>
+            <label class="lbl">Academic Year</label>
+            <select class="inp" id="auth-std">
+              <option>1st Year BTech</option><option>2nd Year BTech</option>
+              <option>3rd Year BTech</option><option>4th Year BTech</option><option>Graduated</option>
+            </select>
+          </div>
+          <div>
+            <label class="lbl">Current GPA</label>
+            <input class="inp" type="number" id="auth-gpa" placeholder="8.5" min="0" max="10" step="0.1">
+          </div>
+        </div>
+        <label class="lbl">Career Goal (if known)</label>
+        <input class="inp" id="auth-goals" placeholder="e.g. Google Software Engineer (or leave blank)">
+      </div>
+    </div>
+    <button class="btn" id="btn-auth" onclick="handleAuth()" style="margin-top:8px;font-size:15px;padding:15px;">
+      Initialize Portal Account
+    </button>
+    <div class="auth-toggle">
+      <span id="toggle-msg">Already have an account?</span>&nbsp;
+      <a class="auth-toggle-link" id="toggle-link" onclick="toggleLoginMode()">Sign In Here</a>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+     MAIN APP
+════════════════════════════════ -->
+<div id="pg-app" style="display:none;position:relative;z-index:1;">
+
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="nav-left">
+      <div class="logo">🚀 WhatNxt</div>
+      <span class="logo-badge">OS v2.0</span>
+      <div class="status-dot"></div>
+    </div>
+    <div class="nav-right">
+      <span class="info-chip" id="nav-user-info">— Loading —</span>
+      <span class="theme-label" id="theme-label">Dark</span>
+      <div class="theme-toggle" onclick="toggleTheme()" role="button" aria-label="Toggle theme">
+        <div class="theme-toggle-thumb" id="theme-thumb">🌙</div>
+      </div>
+      <button class="btn btn-danger" style="width:auto;padding:10px 20px;font-size:13px;" onclick="logout()">Sign Out</button>
+    </div>
+  </nav>
+
+  <!-- LAYOUT -->
+  <div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="profile-sticky">
+      <div class="card" style="text-align:center;">
+        <div class="avatar" id="av-letter">U</div>
+        <div class="profile-name" id="dash-name">User Name</div>
+        <div class="profile-year" id="dash-std">Academic Year</div>
+        <div class="profile-gpa" id="dash-gpa">GPA: 0.0</div>
+        <hr class="profile-divider">
+        <div style="text-align:left;">
+          <div class="scan-section-title">👁️ Vision AI Scanner</div>
+          <label for="cert-upload" class="dropzone-label" id="drop-text">
+            <span class="dropzone-icon">📄</span>
+            <span class="dropzone-text">Upload Certificate<br>to Extract Skills</span>
+          </label>
+          <input type="file" id="cert-upload" style="display:none;" accept="image/*" onchange="scanCertificate(event)">
+          <div id="skill-tags"></div>
+        </div>
+        <hr class="profile-divider">
+        <!-- Quick career display in sidebar -->
+        <div id="sidebar-career" style="display:none;text-align:left;">
+          <div class="scan-section-title">🎯 Your Career Path</div>
+          <div id="sidebar-career-val" style="font-size:13px;font-weight:700;color:var(--tx-accent);font-family:var(--ff-mono);"></div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main>
+      <!-- TABS -->
+      <div class="tab-container">
+        <button class="tab-btn active" id="tab-roadmap" onclick="switchView('roadmap')">🗺️ Roadmap</button>
+        <button class="tab-btn" id="tab-resume" onclick="switchView('resume')">📄 Resume</button>
+        <button class="tab-btn" id="tab-quiz" onclick="switchView('quiz')">🧠 Quiz</button>
+        <button class="tab-btn" id="tab-jobs" onclick="switchView('jobs')">💼 Jobs</button>
+        <button class="tab-btn" id="tab-courses" onclick="switchView('courses')">📚 Courses</button>
+        <button class="tab-btn" id="tab-discover" onclick="switchView('discover')">🔍 Discover Career</button>
+      </div>
+
+      <!-- ─────── ROADMAP VIEW ─────── -->
+      <div id="view-roadmap">
+        <div class="card" style="margin-bottom:24px;">
+          <h2 class="section-title">Architect Your Future</h2>
+          <p class="section-sub">Select a discipline — AI generates a strict execution timeline with embedded YouTube tutorials and certified course links.</p>
+          <label class="lbl">Target Engineering Discipline</label>
+          <select class="inp" id="target-role" style="font-size:15px;padding:14px;margin-bottom:20px;">
+            <option>Software Engineer</option><option>Data Scientist</option>
+            <option>Cybersecurity Analyst</option><option>Cloud Architect</option><option>AI Engineer</option>
+          </select>
+          <button class="btn" id="btn-roadmap" onclick="generateRoadmap()" style="font-size:15px;padding:15px;">
+            ⚡ Synthesize Graphical Roadmap
+          </button>
+        </div>
+        <div class="card" id="roadmap-output" style="display:none;">
+          <div id="roadmap-content"></div>
+        </div>
+      </div>
+
+      <!-- ─────── RESUME VIEW ─────── -->
+      <div id="view-resume" style="display:none;">
+        <div class="card">
+          <div class="resume-hero">
+            <span class="resume-hero-icon">📝</span>
+            <div class="resume-hero-title">AI Resume Forge</div>
+            <p class="resume-hero-sub">Instantly generate a professional, ATS-optimized HTML resume tailored to your profile, GPA, and extracted skills.</p>
+            <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+              <button class="btn btn-purple" id="btn-resume" onclick="buildResume()" style="max-width:240px;">🛠️ Forge My Resume</button>
+              <button class="btn btn-outline btn-sm" onclick="printResume()" style="max-width:180px;width:auto;padding:14px 24px;">🖨️ Print / Save PDF</button>
+            </div>
+          </div>
+        </div>
+        <div class="card" id="resume-output" style="display:none;margin-top:24px;background:#fff;color:#000;">
+          <div id="resume-content"></div>
+        </div>
+      </div>
+
+      <!-- ─────── QUIZ VIEW ─────── -->
+      <div id="view-quiz" style="display:none;">
+        <div class="card" style="margin-bottom:24px;">
+          <h2 class="section-title">Knowledge Quiz</h2>
+          <p class="section-sub">Test your knowledge in your chosen domain. Get instant explanations and track your progress.</p>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
+            <div style="flex:1;min-width:200px;">
+              <label class="lbl">Domain</label>
+              <select class="inp" id="quiz-domain" style="margin-bottom:0;">
+                <option>Software Engineer</option><option>Data Scientist</option>
+                <option>Cybersecurity Analyst</option><option>Cloud Architect</option><option>AI Engineer</option>
+              </select>
+            </div>
+            <div style="width:120px;">
+              <label class="lbl">Questions</label>
+              <select class="inp" id="quiz-count" style="margin-bottom:0;">
+                <option value="5">5</option><option value="8">8</option><option value="10">10</option>
+              </select>
+            </div>
+            <button class="btn btn-sm" onclick="loadQuiz()" style="width:auto;padding:13px 24px;">🎯 Start Quiz</button>
+          </div>
+        </div>
+        <div id="quiz-area"></div>
+      </div>
+
+      <!-- ─────── JOBS VIEW ─────── -->
+      <div id="view-jobs" style="display:none;">
+        <div class="card" style="margin-bottom:24px;">
+          <h2 class="section-title">Live Job Board</h2>
+          <p class="section-sub">Explore real opportunities filtered by role, type, and location.</p>
+          <div class="jobs-filter">
+            <div style="flex:1;min-width:160px;">
+              <label class="lbl">Role</label>
+              <select class="inp" id="jobs-role" style="margin-bottom:0;">
+                <option value="All">All Roles</option>
+                <option>Software Engineer</option><option>Data Scientist</option>
+                <option>Cybersecurity Analyst</option><option>Cloud Architect</option><option>AI Engineer</option>
+              </select>
+            </div>
+            <div style="min-width:140px;">
+              <label class="lbl">Type</label>
+              <select class="inp" id="jobs-type" style="margin-bottom:0;">
+                <option value="All">All Types</option>
+                <option>Full-time</option><option>Internship</option>
+              </select>
+            </div>
+            <div style="min-width:140px;">
+              <label class="lbl">Location</label>
+              <select class="inp" id="jobs-location" style="margin-bottom:0;">
+                <option value="All">All Locations</option>
+                <option>Bangalore</option><option>Hyderabad</option><option>Mumbai</option>
+                <option>Chennai</option><option>Remote</option>
+              </select>
+            </div>
+            <button class="btn btn-sm" onclick="loadJobs()" style="width:auto;padding:13px 24px;align-self:flex-end;">🔍 Search</button>
+          </div>
+        </div>
+        <div id="jobs-area">
+          <div class="empty-state">
+            <span class="empty-icon">💼</span>
+            <div class="empty-text">Ready to explore jobs?</div>
+            <div class="empty-sub">Use the filters above and click Search</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─────── COURSES VIEW ─────── -->
+      <div id="view-courses" style="display:none;">
+        <div class="card" style="margin-bottom:24px;">
+          <h2 class="section-title">Course Library</h2>
+          <p class="section-sub">Curated courses from Coursera, Udemy, and more — filtered for your domain and level.</p>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
+            <div style="flex:1;min-width:180px;">
+              <label class="lbl">Domain</label>
+              <select class="inp" id="courses-domain" style="margin-bottom:0;">
+                <option>Software Engineer</option><option>Data Scientist</option>
+                <option>Cybersecurity Analyst</option><option>Cloud Architect</option><option>AI Engineer</option>
+              </select>
+            </div>
+            <div style="min-width:140px;">
+              <label class="lbl">Level</label>
+              <select class="inp" id="courses-level" style="margin-bottom:0;">
+                <option value="All">All Levels</option>
+                <option>Beginner</option><option>Intermediate</option><option>Advanced</option>
+              </select>
+            </div>
+            <button class="btn btn-sm" onclick="loadCourses()" style="width:auto;padding:13px 24px;align-self:flex-end;">📚 Load Courses</button>
+          </div>
+        </div>
+        <div id="courses-area">
+          <div class="empty-state">
+            <span class="empty-icon">📚</span>
+            <div class="empty-text">Select a domain to get started</div>
+            <div class="empty-sub">Courses will load from our curated database</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─────── DISCOVER CAREER (Path 2) ─────── -->
+      <div id="view-discover" style="display:none;">
+        <div class="card" style="margin-bottom:24px;" id="discover-intro">
+          <h2 class="section-title">🔍 Discover Your Career</h2>
+          <p class="section-sub">Not sure what to do after BTech? Answer 5 quick questions — our AI will analyse your personality, interests, and marks to suggest the perfect career path with a full 4-year roadmap.</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;">
+            <div>
+              <label class="lbl">Maths Grade</label>
+              <select class="inp" id="mark-maths" style="margin-bottom:0;"><option>S</option><option>A+</option><option>A</option><option>B</option><option>C</option></select>
+            </div>
+            <div>
+              <label class="lbl">CS Grade</label>
+              <select class="inp" id="mark-cs" style="margin-bottom:0;"><option>S</option><option>A+</option><option>A</option><option>B</option><option>C</option></select>
+            </div>
+            <div>
+              <label class="lbl">Physics Grade</label>
+              <select class="inp" id="mark-phy" style="margin-bottom:0;"><option>A</option><option>S</option><option>A+</option><option>B</option><option>C</option></select>
+            </div>
+            <div>
+              <label class="lbl">English Grade</label>
+              <select class="inp" id="mark-eng" style="margin-bottom:0;"><option>A</option><option>S</option><option>A+</option><option>B</option><option>C</option></select>
+            </div>
+          </div>
+          <button class="btn" onclick="startPsychometric()" style="font-size:15px;padding:15px;">🧠 Begin Career Discovery</button>
+        </div>
+
+        <!-- Psychometric Questions -->
+        <div id="discover-quiz" style="display:none;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <h3 style="font-family:var(--ff-display);font-size:18px;font-weight:700;">Personality Assessment</h3>
+            <div class="step-indicator" id="psycho-steps"></div>
+          </div>
+          <div id="psycho-q-area"></div>
+          <div style="display:flex;gap:12px;margin-top:16px;">
+            <button class="btn btn-outline btn-sm" onclick="psychoPrev()" id="psycho-prev" style="width:auto;padding:11px 22px;">← Back</button>
+            <button class="btn btn-sm" onclick="psychoNext()" id="psycho-next" style="flex:1;padding:11px;">Next →</button>
+          </div>
+        </div>
+
+        <!-- Career Result -->
+        <div id="discover-result" style="display:none;"></div>
+      </div>
+
+    </main>
+  </div><!-- /layout -->
+</div><!-- /pg-app -->
+
+<!-- CHATBOT FAB -->
+<button class="chat-fab" onclick="toggleChat()" title="Open AI Mentor">🤖</button>
+<div class="chat-window" id="chat-win">
+  <div class="chat-header">
+    <div class="chat-header-info">
+      <div class="status-dot"></div>
+      <span class="chat-bot-name">NxtBot AI Mentor</span>
+    </div>
+    <button onclick="toggleChat()" style="background:none;border:none;cursor:pointer;color:rgba(255,255,255,.6);font-size:18px;line-height:1;padding:0;">✕</button>
+  </div>
+  <div class="chat-body" id="chat-msgs">
+    <div class="msg msg-ai">System Online ✅<br>How can I assist your career progression today?</div>
+  </div>
+  <div class="chat-footer">
+    <input class="chat-input" id="chat-inp" placeholder="Ask about interviews, skills..." onkeypress="if(event.key==='Enter') sendChat()">
+    <button class="chat-send" onclick="sendChat()">↑</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════ -->
+<script>
+const API_BASE = "http://127.0.0.1:5000/api";
+let isSignUp = true, userProfile = {}, chatHistory = [];
+let quizQuestions = [], quizAnswers = {}, quizSubmitted = false;
+let psychoQuestions = [], psychoAnswers = [], psychoStep = 0;
+
+function $(id){ return document.getElementById(id); }
+
+/* ── THEME ── */
+function toggleTheme(){
+  const html = document.documentElement, isDark = html.getAttribute('data-theme')==='dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  $('theme-thumb').textContent = isDark ? '☀️' : '🌙';
+  $('theme-label').textContent  = isDark ? 'Light' : 'Dark';
+  localStorage.setItem('wn-theme', isDark ? 'light' : 'dark');
+}
+(function(){
+  const saved = localStorage.getItem('wn-theme');
+  if(saved && saved !== 'dark'){
+    document.documentElement.setAttribute('data-theme', saved);
+    const t = document.getElementById('theme-thumb'), l = document.getElementById('theme-label');
+    if(t) t.textContent='☀️'; if(l) l.textContent='Light';
+  }
+})();
+
+/* ── AUTH ── */
+function toggleLoginMode(){
+  isSignUp = !isSignUp;
+  $('signup-extra').style.display = isSignUp ? 'block' : 'none';
+  $('btn-auth').textContent = isSignUp ? 'Initialize Portal Account' : 'Access Portal';
+  $('toggle-msg').textContent = isSignUp ? 'Already have an account?' : "Don't have an account?";
+  $('toggle-link').textContent = isSignUp ? 'Sign In Here' : 'Create Account';
+}
+
+async function handleAuth(){
+  const btn = $('btn-auth');
+  const payload = { action: isSignUp?'signup':'login', username: $('auth-user').value, password: $('auth-pass').value };
+  if(isSignUp){
+    payload.standard = $('auth-std').value;
+    payload.gpa      = $('auth-gpa').value;
+    payload.goals    = $('auth-goals').value;
+    if(!payload.username||!payload.password||!payload.gpa){ alert('Please fill in all fields.'); return; }
+  }
+  const orig = btn.textContent; btn.textContent='Authenticating…'; btn.disabled=true;
+  try {
+    const res  = await fetch(`${API_BASE}/auth`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const data = await res.json();
+    if(data.status==='success'){
+      userProfile = data.user;
+      applyProfile();
+      $('pg-login').style.display='none';
+      $('pg-app').style.display='block';
+      // Auto-load jobs on login
+      loadJobs();
+    } else { alert('Error: '+data.message); }
+  } catch(e){ alert('Backend offline — start the Python API server (python api_Claude.py).'); }
+  finally{ btn.textContent=orig; btn.disabled=false; }
+}
+
+function applyProfile(){
+  const init = userProfile.name.charAt(0).toUpperCase();
+  $('dash-name').textContent = userProfile.name;
+  $('av-letter').textContent = init;
+  $('dash-std').textContent  = userProfile.standard;
+  $('dash-gpa').textContent  = 'GPA: '+userProfile.gpa;
+  $('nav-user-info').textContent = `${init} · ${userProfile.standard}`;
+  if(userProfile.career_path){
+    $('sidebar-career').style.display='block';
+    $('sidebar-career-val').textContent = userProfile.career_path;
+  }
+}
+
+function logout(){ $('pg-app').style.display='none'; $('pg-login').style.display='flex'; userProfile={}; chatHistory=[]; }
+
+/* ── VIEWS ── */
+const VIEWS = ['roadmap','resume','quiz','jobs','courses','discover'];
+function switchView(v){
+  VIEWS.forEach(n=>{ const el=$('view-'+n); if(el) el.style.display=n===v?'block':'none'; });
+  VIEWS.forEach(n=>{ const t=$('tab-'+n); if(t) t.className='tab-btn'+(n===v?' active':''); });
+}
+
+/* ── ROADMAP ── */
+async function generateRoadmap(){
+  const btn=$('btn-roadmap'), content=$('roadmap-content');
+  btn.textContent='⚙️ Synthesizing…'; btn.disabled=true;
+  $('roadmap-output').style.display='block';
+  content.innerHTML=`<div class="loading-state"><div class="spinner"></div><div class="loading-text">COMPILING NEURAL DATA · PLEASE WAIT</div></div>`;
+  try {
+    const res  = await fetch(`${API_BASE}/generate_roadmap`,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({name:userProfile.name,standard:userProfile.standard,role:$('target-role').value})});
+    const data = await res.json();
+    content.innerHTML = data.roadmap;
+  } catch(e){ content.innerHTML="<p style='color:var(--danger);font-weight:600;padding:20px;'>⚠️ Connection failed — is the backend running?</p>"; }
+  finally{ btn.textContent='⚡ Synthesize Graphical Roadmap'; btn.disabled=false; }
+}
+
+/* ── RESUME ── */
+async function buildResume(){
+  const btn=$('btn-resume'), content=$('resume-content');
+  btn.textContent='⚙️ Forging…'; btn.disabled=true;
+  $('resume-output').style.display='block';
+  content.innerHTML=`<div class="loading-state" style="color:#555;"><div class="spinner"></div><div class="loading-text" style="color:#888;">WRITING RESUME · PLEASE WAIT</div></div>`;
+  try {
+    const res  = await fetch(`${API_BASE}/build_resume`,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({name:userProfile.name,standard:userProfile.standard,gpa:userProfile.gpa,role:$('target-role').value||'Software Engineer'})});
+    const data = await res.json();
+    content.innerHTML = data.resume;
+  } catch(e){ content.innerHTML="<p style='color:red;padding:20px;font-weight:600;'>⚠️ Connection failed.</p>"; }
+  finally{ btn.textContent='🛠️ Forge My Resume'; btn.disabled=false; }
+}
+
+function printResume(){
+  const html = $('resume-content').innerHTML;
+  if(!html){ alert('Please forge your resume first!'); return; }
+  const w = window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><title>Resume - ${userProfile.name}</title></head><body>${html}</body></html>`);
+  w.document.close(); w.print();
+}
+
+/* ── QUIZ ── */
+async function loadQuiz(){
+  const area = $('quiz-area');
+  area.innerHTML=`<div class="loading-state"><div class="spinner"></div><div class="loading-text">LOADING QUESTIONS…</div></div>`;
+  quizAnswers={}; quizSubmitted=false;
+  try {
+    const res  = await fetch(`${API_BASE}/get_quiz`,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({domain:$('quiz-domain').value,count:$('quiz-count').value})});
+    const data = await res.json();
+    quizQuestions = data.questions;
+    renderQuiz();
+  } catch(e){ area.innerHTML=`<div class="empty-state"><span class="empty-icon">❌</span><div class="empty-text">Could not load quiz. Is backend running?</div></div>`; }
+}
+
+function renderQuiz(){
+  const area = $('quiz-area');
+  if(!quizQuestions.length){ area.innerHTML='<div class="empty-state"><span class="empty-icon">❓</span><div class="empty-text">No questions found for this domain.</div></div>'; return; }
+  let html='';
+  quizQuestions.forEach((q,i)=>{
+    html+=`<div class="card quiz-q-card" id="qcard-${i}" style="animation-delay:${i*0.06}s">
+      <div class="quiz-question"><span style="font-family:var(--ff-mono);color:var(--tx-muted);font-size:12px;">Q${i+1}/${quizQuestions.length}</span><br>${q.question}</div>`;
+    ['A','B','C','D'].forEach(k=>{
+      html+=`<div class="quiz-option" id="opt-${i}-${k}" onclick="selectOption(${i},'${k}')">
+        <span class="quiz-option-key">${k}</span>${q.options[k]}
+      </div>`;
+    });
+    html+=`<div class="quiz-explanation" id="exp-${i}">💡 ${q.explanation}</div></div>`;
+  });
+  html+=`<div style="margin-top:20px;"><button class="btn" onclick="submitQuiz()" id="btn-submit-quiz" style="font-size:15px;padding:15px;">✅ Submit Quiz</button></div>`;
+  area.innerHTML=html;
+}
+
+function selectOption(qi,key){
+  if(quizSubmitted) return;
+  quizAnswers[qi]=key;
+  ['A','B','C','D'].forEach(k=>{
+    const el=$(`opt-${qi}-${k}`);
+    if(el) el.className='quiz-option'+(k===key?' selected':'');
+  });
+}
+
+async function submitQuiz(){
+  if(quizSubmitted) return;
+  const unanswered = quizQuestions.reduce((acc,_,i)=>(!quizAnswers[i]?acc+1:acc),0);
+  if(unanswered>0 && !confirm(`You have ${unanswered} unanswered question(s). Submit anyway?`)) return;
+  quizSubmitted=true;
+  const correct_answers = {};
+  quizQuestions.forEach((q,i)=>{ correct_answers[i]=q.correct; });
+
+  // Show correct/wrong inline
+  quizQuestions.forEach((q,i)=>{
+    ['A','B','C','D'].forEach(k=>{
+      const opt=$(`opt-${i}-${k}`);
+      if(!opt) return;
+      if(k===q.correct) opt.className='quiz-option correct';
+      else if(quizAnswers[i]===k) opt.className='quiz-option wrong';
+    });
+    const exp=$(`exp-${i}`); if(exp) exp.style.display='block';
+  });
+
+  try {
+    const res  = await fetch(`${API_BASE}/submit_quiz`,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({answers:quizAnswers,correct_answers,username:userProfile.name,domain:$('quiz-domain').value})});
+    const d = await res.json();
+    const submitBtn = $('btn-submit-quiz');
+    if(submitBtn){
+      const pct = d.percentage;
+      submitBtn.outerHTML=`
+        <div class="quiz-result-card">
+          <div class="result-score">${d.score}/${d.total}</div>
+          <div class="result-grade">${d.grade}</div>
+          <div class="score-bar-wrap"><div class="score-bar" style="--w:${pct}%;width:${pct}%;"></div></div>
+          <div style="font-family:var(--ff-mono);font-size:12px;color:var(--tx-muted);margin:6px 0;">${pct}% Correct</div>
+          <div class="result-next">${d.next_step}</div>
+          <button class="btn btn-outline btn-sm" onclick="loadQuiz()" style="margin-top:16px;width:auto;padding:11px 24px;">🔄 Try Again</button>
+        </div>`;
+    }
+  } catch(e){ console.error(e); }
+}
+
+/* ── JOBS ── */
+async function loadJobs(){
+  const area = $('jobs-area');
+  if(area) area.innerHTML=`<div class="loading-state"><div class="spinner"></div><div class="loading-text">FETCHING OPPORTUNITIES…</div></div>`;
+  try {
+    const roleEl = $('jobs-role'), typeEl = $('jobs-type'), locEl = $('jobs-location');
+    const res = await fetch(`${API_BASE}/get_jobs`,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        role:  roleEl  ? roleEl.value  : 'All',
+        type:  typeEl  ? typeEl.value  : 'All',
+        location: locEl ? locEl.value  : 'All'
+      })});
+    const data = await res.json();
+    renderJobs(data.jobs);
+  } catch(e){
+    if(area) area.innerHTML=`<div class="empty-state"><span class="empty-icon">❌</span><div class="empty-text">Could not load jobs. Is backend running?</div></div>`;
+  }
+}
+
+function renderJobs(jobs){
+  const area = $('jobs-area');
+  if(!jobs||!jobs.length){
+    area.innerHTML=`<div class="empty-state"><span class="empty-icon">🔎</span><div class="empty-text">No jobs found for this filter.</div><div class="empty-sub">Try changing the filters above.</div></div>`; return;
+  }
+  area.innerHTML=`<p style="color:var(--tx-muted);font-size:13px;margin-bottom:16px;font-family:var(--ff-mono);">${jobs.length} OPPORTUNITIES FOUND</p>
+    <div class="jobs-grid">${jobs.map(j=>jobCardHTML(j)).join('')}</div>`;
+}
+
+function jobCardHTML(j){
+  const exp = j.Experience||'0-2 yrs';
+  return `<div class="job-card">
+    <div class="job-header">
+      <div class="job-emoji">${j.Logo_Emoji||'🏢'}</div>
+      <div>
+        <div class="job-title">${j.Role}</div>
+        <div class="job-company">${j.Company}</div>
+      </div>
+    </div>
+    <div class="job-meta">
+      <span class="job-chip chip-loc">📍 ${j.Location}</span>
+      <span class="job-chip chip-type">${j.Type}</span>
+      <span class="job-chip chip-sal">💰 ${j.Salary}</span>
+      <span class="job-chip chip-exp">🎓 ${exp}</span>
+    </div>
+    <div class="job-skills">🛠 ${j.Skills_Required}</div>
+    <a href="${j.Apply_Link}" target="_blank" rel="noopener">
+      <button class="btn btn-sm" style="font-size:13px;padding:11px 20px;">Apply Now →</button>
+    </a>
+  </div>`;
+}
+
+/* ── COURSES ── */
+async function loadCourses(){
+  const area = $('courses-area');
+  area.innerHTML=`<div class="loading-state"><div class="spinner"></div><div class="loading-text">LOADING COURSES…</div></div>`;
+  try {
+    const res  = await fetch(`${API_BASE}/get_courses`,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({domain:$('courses-domain').value,level:$('courses-level').value})});
+    const data = await res.json();
+    renderCourses(data.courses);
+  } catch(e){ area.innerHTML=`<div class="empty-state"><span class="empty-icon">❌</span><div class="empty-text">Could not load courses. Is backend running?</div></div>`; }
+}
+
+function renderCourses(courses){
+  const area = $('courses-area');
+  if(!courses||!courses.length){
+    area.innerHTML=`<div class="empty-state"><span class="empty-icon">📭</span><div class="empty-text">No courses found for this domain/level.</div></div>`; return;
+  }
+  area.innerHTML=`<p style="color:var(--tx-muted);font-size:13px;margin-bottom:16px;font-family:var(--ff-mono);">${courses.length} COURSES FOUND</p>
+    <div class="courses-grid">${courses.map(c=>courseCardHTML(c)).join('')}</div>`;
+}
+
+function courseCardHTML(c){
+  const freeClass = c.Free_or_Paid&&c.Free_or_Paid.toLowerCase().includes('free') ? 'c-free' : 'c-paid';
+  const freeLabel = c.Free_or_Paid&&c.Free_or_Paid.toLowerCase().includes('free') ? '🆓 Free' : '💳 Paid';
+  const stars = c.Rating ? '⭐'.repeat(Math.round(parseFloat(c.Rating)||4)) : '';
+  return `<div class="course-card">
+    <div class="course-platform">${c.Platform||'Online'}</div>
+    <div class="course-name">${c.Course_Name}</div>
+    <div class="course-meta">
+      <span class="course-chip ${freeClass}">${freeLabel}</span>
+      <span class="course-chip c-level">🎯 ${c.Level||'All Levels'}</span>
+      <span class="course-chip c-dur">⏱ ${c.Duration||'Self-paced'}</span>
+    </div>
+    <div class="c-rating">${stars} ${c.Rating||''}</div>
+    <a href="${c.Link}" target="_blank" rel="noopener" style="margin-top:14px;display:block;">
+      <button class="btn btn-sm" style="font-size:12px;padding:10px 16px;">Enroll Now →</button>
+    </a>
+  </div>`;
+}
+
+/* ── DISCOVER CAREER (PATH 2) ── */
+async function startPsychometric(){
+  $('discover-intro').style.display='none';
+  const quizArea = $('discover-quiz');
+  quizArea.innerHTML=`<div class="loading-state"><div class="spinner"></div><div class="loading-text">LOADING ASSESSMENT…</div></div>`;
+  quizArea.style.display='block';
+  try {
+    const res  = await fetch(`${API_BASE}/get_psychometric_quiz`);
+    const data = await res.json();
+    psychoQuestions = data.questions;
+    psychoAnswers   = new Array(psychoQuestions.length).fill(null);
+    psychoStep      = 0;
+    renderPsychoStep();
+  } catch(e){ quizArea.innerHTML=`<div class="empty-state"><span class="empty-icon">❌</span><div class="empty-text">Could not load assessment. Is backend running?</div></div>`; }
+}
+
+function renderPsychoStep(){
+  const total = psychoQuestions.length;
+  const q     = psychoQuestions[psychoStep];
+  // Step dots
+  let dots='';
+  for(let i=0;i<total;i++) dots+=`<div class="step-dot${i<psychoStep?' done':i===psychoStep?' active':''}"></div>`;
+  $('psycho-steps').innerHTML=dots;
+
+  const area=$('psycho-q-area');
+  area.innerHTML=`<div class="card quiz-q-card" style="animation:fadeUp .3s ease;">
+    <div class="quiz-question" style="font-size:17px;margin-bottom:20px;">
+      <span style="font-family:var(--ff-mono);color:var(--tx-muted);font-size:11px;display:block;margin-bottom:8px;">QUESTION ${psychoStep+1} OF ${total}</span>
+      ${q.question}
+    </div>
+    ${['A','B','C','D'].map(k=>`
+      <div class="psycho-option${psychoAnswers[psychoStep]===k?' selected':''}" id="popt-${k}" onclick="selectPsycho('${k}')">
+        <span class="psycho-letter">${k}</span>${q.options[k]}
+      </div>`).join('')}
+  </div>`;
+
+  $('psycho-prev').style.display = psychoStep===0 ? 'none' : 'flex';
+  $('psycho-next').textContent   = psychoStep===total-1 ? '🚀 Discover My Career' : 'Next →';
+}
+
+function selectPsycho(key){
+  psychoAnswers[psychoStep]=key;
+  ['A','B','C','D'].forEach(k=>{
+    const el=$(`popt-${k}`); if(el) el.className='psycho-option'+(k===key?' selected':'');
+  });
+}
+
+function psychoNext(){
+  if(!psychoAnswers[psychoStep]){ alert('Please choose an answer to continue.'); return; }
+  if(psychoStep<psychoQuestions.length-1){ psychoStep++; renderPsychoStep(); }
+  else { submitPsychometric(); }
+}
+
+function psychoPrev(){
+  if(psychoStep>0){ psychoStep--; renderPsychoStep(); }
+}
+
+async function submitPsychometric(){
+  $('discover-quiz').style.display='none';
+  const result=$('discover-result');
+  result.style.display='block';
+  result.innerHTML=`<div class="loading-state"><div class="spinner"></div><div class="loading-text">AI IS ANALYSING YOUR PROFILE…</div></div>`;
+
+  const marks={Maths:$('mark-maths').value,CS:$('mark-cs').value,Physics:$('mark-phy').value,English:$('mark-eng').value};
+  const answers=psychoQuestions.map((q,i)=>q.options[psychoAnswers[i]]||'');
+
+  try {
+    const res  = await fetch(`${API_BASE}/discover_career`,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({answers,marks,name:userProfile.name,standard:userProfile.standard})});
+    const data = await res.json();
+    result.innerHTML=`
+      <div class="card" style="margin-bottom:16px;background:linear-gradient(135deg,rgba(37,99,235,.15),rgba(6,182,212,.08));border-color:var(--border-hover);">
+        <div style="text-align:center;margin-bottom:20px;">
+          <div style="font-family:var(--ff-display);font-size:14px;color:var(--tx-muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">AI Career Match</div>
+          <div style="font-family:var(--ff-display);font-size:32px;font-weight:900;background:var(--grad-blue);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">${data.career}</div>
+        </div>
+        <div class="career-result-html">${data.report}</div>
+      </div>
+      <button class="btn btn-outline" onclick="resetDiscover()" style="font-size:14px;padding:13px;">🔄 Retake Assessment</button>`;
+
+    // Update sidebar
+    userProfile.career_path = data.career;
+    $('sidebar-career').style.display='block';
+    $('sidebar-career-val').textContent=data.career;
+  } catch(e){ result.innerHTML=`<div class="empty-state"><span class="empty-icon">❌</span><div class="empty-text">Analysis failed. Is backend running?</div></div>`; }
+}
+
+function resetDiscover(){
+  $('discover-result').style.display='none';
+  $('discover-intro').style.display='block';
+  psychoAnswers=[]; psychoStep=0;
+}
+
+/* ── CERTIFICATE SCANNER ── */
+async function scanCertificate(event){
+  const file=event.target.files[0]; if(!file) return;
+  const drop=$('drop-text');
+  drop.innerHTML=`<div style="font-size:26px;animation:spin 1s linear infinite;">⚙️</div><span class="dropzone-text">Scanning…</span>`;
+  const reader=new FileReader();
+  reader.onload=async function(e){
+    try {
+      const res  = await fetch(`${API_BASE}/scan_certificate`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image:e.target.result})});
+      const data = await res.json();
+      const box=$('skill-tags'); box.innerHTML='';
+      data.skills.split(',').forEach((s,i)=>{
+        const tag=document.createElement('span');
+        tag.className='skill-tag'; tag.style.animationDelay=(i*.06)+'s'; tag.textContent=s.trim(); box.appendChild(tag);
+      });
+      drop.innerHTML=`<div style="font-size:28px;">✅</div><span class="dropzone-text" style="color:var(--success);">Skills Extracted!</span>`;
+      setTimeout(()=>{ drop.innerHTML=`<span class="dropzone-icon">📄</span><span class="dropzone-text">Upload Another Certificate</span>`; },3000);
+    } catch(er){ drop.innerHTML=`<span class="dropzone-icon">❌</span><span class="dropzone-text" style="color:var(--danger);">Scan Failed</span>`; }
+  };
+  reader.readAsDataURL(file);
+}
+
+/* ── CHAT ── */
+function toggleChat(){
+  const win=$('chat-win');
+  win.style.display=win.style.display==='flex'?'none':'flex';
+}
+async function sendChat(){
+  const inp=$('chat-inp'), box=$('chat-msgs'), text=inp.value.trim();
+  if(!text) return;
+  box.innerHTML+=`<div class="msg msg-user">${text}</div>`;
+  inp.value=''; box.scrollTop=box.scrollHeight;
+  chatHistory.push({sender:'Student',text});
+  try {
+    const res  = await fetch(`${API_BASE}/chat`,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({message:text,history:chatHistory,name:userProfile.name,career:userProfile.career_path||''})});
+    const data = await res.json();
+    box.innerHTML+=`<div class="msg msg-ai">${data.reply}</div>`;
+    chatHistory.push({sender:'WhatNxt',text:data.reply});
+    box.scrollTop=box.scrollHeight;
+  } catch(e){ box.innerHTML+=`<div class="msg msg-ai" style="color:var(--danger);">⚠️ Connection offline.</div>`; }
+}
+
+/* ── INIT ── */
+// Auto-load on first tab switch if logged in
+document.addEventListener('DOMContentLoaded',()=>{
+  // nothing needed — views handle lazy loading
+});
+</script>
+</body>
+</html>

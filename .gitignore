@@ -5,12 +5,22 @@
 # Python
 __pycache__/
 *.py[cod]
+*.pyc
+*.pyo
+*.pyd
 *.egg-info/
 venv/
+.venv/
+env/
+.Python
+
+# Environment variables
 .env
+.env.local
 
 # Databases (local dev — regenerated on startup)
 db/*.db
+*.db
 
 # Large Kaggle datasets (too big for Git)
 data/job_data.csv
@@ -22,3 +32,11 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
+*.swp
+*.swo
+
+# Logs & Temp
+*.log
+logs/
+*.tmp
+*.temp
