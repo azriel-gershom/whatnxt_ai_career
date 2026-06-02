@@ -223,17 +223,105 @@ select.inp option{background:var(--bg-primary);color:var(--tx-primary)}
 .spinner{width:48px;height:48px;border:3px solid rgba(59,130,246,.15);border-top-color:var(--blue-500);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 20px}
 .loading-text{font-family:var(--ff-mono);font-size:13px;color:var(--tx-muted);letter-spacing:1px}
 
-/* ── ROADMAP/RESUME OUTPUT ── */
-#roadmap-output{border:1px solid var(--border-hover);box-shadow:0 0 40px rgba(37,99,235,.1);animation:scaleIn .4s ease}
-#roadmap-content{line-height:1.85;font-size:15px}
+/* ── ROADMAP/RESUME OUTPUT — PREMIUM REDESIGN ── */
+#roadmap-output{border:1px solid rgba(59,130,246,.2);box-shadow:0 0 60px rgba(37,99,235,.08),0 0 120px rgba(6,182,212,.04);animation:roadmapReveal .6s cubic-bezier(.16,1,.3,1);border-radius:20px;overflow:hidden;position:relative}
+#roadmap-output::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#3b82f6,#06b6d4,#22c55e,#f59e0b,#a855f7);background-size:300% 100%;animation:gradientSlide 4s ease infinite;z-index:2}
+@keyframes roadmapReveal{from{opacity:0;transform:translateY(30px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes gradientSlide{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+/* Roadmap content typography */
+#roadmap-content{line-height:1.85;font-size:15px;position:relative}
 #roadmap-content *{color:inherit}
 #roadmap-content div,#roadmap-content p,#roadmap-content span,#roadmap-content li{color:var(--tx-primary)!important}
-#roadmap-content h1,#roadmap-content h2{color:var(--tx-accent)!important}
-#roadmap-content h3,#roadmap-content h4{color:var(--tx-primary)!important}
+#roadmap-content h1{color:#fff!important;font-family:var(--ff-display)!important;font-weight:900!important;letter-spacing:-.5px!important;position:relative}
+#roadmap-content h2{color:var(--tx-accent)!important;font-family:var(--ff-display)!important;font-weight:800!important;font-size:22px!important;margin-top:32px!important;margin-bottom:16px!important;padding-bottom:10px!important;border-bottom:1px solid rgba(59,130,246,.15)!important;position:relative}
+#roadmap-content h2::after{content:'';position:absolute;bottom:-1px;left:0;width:60px;height:2px;background:var(--grad-blue);border-radius:2px}
+#roadmap-content h3{color:var(--tx-primary)!important;font-family:var(--ff-display)!important;font-weight:700!important;font-size:17px!important}
+#roadmap-content h4{color:var(--tx-secondary)!important;font-family:var(--ff-display)!important;font-weight:600!important;font-size:14px!important;text-transform:uppercase!important;letter-spacing:.8px!important}
+
+/* Roadmap inner cards & containers */
+#roadmap-content div[style*="border-radius"]{border-radius:16px!important;transition:transform .25s ease,box-shadow .25s ease}
+#roadmap-content div[style*="border-radius"]:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(0,0,0,.3),0 0 0 1px rgba(59,130,246,.15)}
+#roadmap-content div[style*="background:#1e293b"],#roadmap-content div[style*="background: #1e293b"]{background:rgba(15,23,42,.8)!important;backdrop-filter:blur(12px)!important;-webkit-backdrop-filter:blur(12px)!important;border:1px solid rgba(59,130,246,.12)!important}
+
+/* Roadmap stat cards glow */
+#roadmap-content div[style*="border-left"]{position:relative;overflow:hidden}
+#roadmap-content div[style*="border-left"]::before{content:'';position:absolute;top:0;right:0;bottom:0;width:80px;background:linear-gradient(90deg,transparent,rgba(59,130,246,.03));pointer-events:none}
+
+/* Roadmap links */
+#roadmap-content a{color:#60a5fa!important;text-decoration:none!important;font-weight:600!important;transition:all .2s ease!important;position:relative!important}
+#roadmap-content a:hover{color:#93c5fd!important;text-shadow:0 0 12px rgba(96,165,250,.3)!important}
+#roadmap-content a[style*="border-radius:20px"]{transition:all .25s ease!important}
+#roadmap-content a[style*="border-radius:20px"]:hover{transform:translateY(-2px)!important;box-shadow:0 6px 20px rgba(0,0,0,.3)!important}
+
+/* Roadmap tables */
+#roadmap-content table{width:100%!important;border-collapse:separate!important;border-spacing:0!important;border-radius:12px!important;overflow:hidden!important;border:1px solid rgba(59,130,246,.12)!important;margin:16px 0!important}
+#roadmap-content th{font-family:var(--ff-display)!important;font-weight:700!important;font-size:12px!important;text-transform:uppercase!important;letter-spacing:1px!important}
+#roadmap-content td{font-size:13px!important;border-bottom:1px solid rgba(59,130,246,.08)!important;padding:12px 16px!important}
+#roadmap-content tr:last-child td{border-bottom:none!important}
+#roadmap-content tr:hover td{background:rgba(59,130,246,.04)!important}
+
+/* Roadmap bullets */
+#roadmap-content ul,#roadmap-content ol{padding-left:20px!important}
+#roadmap-content li{margin-bottom:8px!important;position:relative}
+#roadmap-content li::marker{color:var(--tx-accent)}
+
+/* Roadmap iframes */
+#roadmap-content iframe{border-radius:14px!important;box-shadow:0 8px 32px rgba(0,0,0,.4)!important;margin:12px 0!important;border:1px solid rgba(59,130,246,.15)!important}
+
+/* Staggered fade-in for roadmap children */
+#roadmap-content > div{opacity:0;animation:roadmapChildFade .5s ease forwards}
+#roadmap-content > div:nth-child(1){animation-delay:.1s}
+#roadmap-content > div:nth-child(2){animation-delay:.2s}
+#roadmap-content > div:nth-child(3){animation-delay:.3s}
+#roadmap-content > div:nth-child(4){animation-delay:.4s}
+#roadmap-content > div:nth-child(5){animation-delay:.5s}
+#roadmap-content > div:nth-child(6){animation-delay:.55s}
+#roadmap-content > div:nth-child(7){animation-delay:.6s}
+#roadmap-content > div:nth-child(8){animation-delay:.65s}
+#roadmap-content > div:nth-child(9){animation-delay:.7s}
+#roadmap-content > div:nth-child(10){animation-delay:.75s}
+#roadmap-content > div:nth-child(n+11){animation-delay:.8s}
+@keyframes roadmapChildFade{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+
+/* Dark color overrides */
 #roadmap-content [style*="color:#1a1a1a"],#roadmap-content [style*="color:#333"],#roadmap-content [style*="color:#000"],#roadmap-content [style*="color:black"],#roadmap-content [style*="color:#111"],#roadmap-content [style*="color:#222"],#roadmap-content [style*="color:#444"],#roadmap-content [style*="color:#555"],#roadmap-content [style*="color:#666"]{color:var(--tx-primary)!important}
 #roadmap-content [style*="background:#fff"],#roadmap-content [style*="background:white"],#roadmap-content [style*="background-color:#fff"]{background:var(--bg-card)!important}
+
+/* Light theme overrides */
 [data-theme="light"] #roadmap-content div,[data-theme="light"] #roadmap-content p,[data-theme="light"] #roadmap-content span,[data-theme="light"] #roadmap-content li,[data-theme="light"] #roadmap-content h1,[data-theme="light"] #roadmap-content h2,[data-theme="light"] #roadmap-content h3,[data-theme="light"] #roadmap-content h4{color:unset!important}
 [data-theme="light"] #roadmap-content [style*="background:#fff"]{background:unset!important}
+[data-theme="light"] #roadmap-output{box-shadow:0 0 40px rgba(37,99,235,.06)}
+
+/* ── Roadmap Hero Section ── */
+.roadmap-hero{position:relative;padding:40px 32px 32px;overflow:hidden;border-radius:20px;background:linear-gradient(135deg,rgba(15,23,42,.95),rgba(30,58,95,.6));border:1px solid rgba(59,130,246,.15)}
+.roadmap-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 0%,rgba(37,99,235,.2),transparent 60%),radial-gradient(ellipse at 70% 100%,rgba(6,182,212,.12),transparent 60%);pointer-events:none}
+.roadmap-hero::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#3b82f6,#06b6d4,#22c55e,#f59e0b);background-size:300% 100%;animation:gradientSlide 4s ease infinite}
+.roadmap-hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.25);border-radius:20px;padding:6px 16px;font-family:var(--ff-mono);font-size:11px;font-weight:600;color:var(--tx-accent);letter-spacing:1px;text-transform:uppercase;margin-bottom:16px;animation:fadeUp .5s ease .1s both}
+.roadmap-hero-title{font-family:var(--ff-display);font-size:32px;font-weight:900;background:linear-gradient(135deg,#fff 0%,#60a5fa 50%,#06b6d4 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-.8px;margin-bottom:10px;line-height:1.2;animation:fadeUp .5s ease .2s both}
+.roadmap-hero-sub{color:var(--tx-secondary);font-size:15px;line-height:1.7;max-width:600px;animation:fadeUp .5s ease .3s both}
+.roadmap-controls{position:relative;z-index:1;margin-top:28px;display:flex;gap:14px;align-items:end;flex-wrap:wrap;animation:fadeUp .5s ease .4s both}
+.roadmap-select-wrap{flex:1;min-width:240px}
+.roadmap-select-wrap .lbl{margin-bottom:8px;font-size:11px;letter-spacing:1.5px}
+.roadmap-select-wrap .inp{font-size:15px;padding:14px 18px;background:rgba(6,12,25,.7);border:1px solid rgba(59,130,246,.2);border-radius:14px;transition:all .3s ease}
+.roadmap-select-wrap .inp:focus{border-color:rgba(59,130,246,.5);box-shadow:0 0 0 3px rgba(59,130,246,.1),0 4px 20px rgba(37,99,235,.1)}
+.btn-roadmap-gen{position:relative;padding:16px 32px;font-size:15px;font-weight:700;border-radius:14px;overflow:hidden;background:linear-gradient(135deg,#2563eb,#0891b2);border:none;color:#fff;cursor:pointer;transition:all .3s cubic-bezier(.34,1.56,.64,1);font-family:var(--ff-body);letter-spacing:.3px;box-shadow:0 4px 20px rgba(37,99,235,.35)}
+.btn-roadmap-gen:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 8px 32px rgba(37,99,235,.5)}
+.btn-roadmap-gen:active{transform:translateY(0) scale(.98)}
+.btn-roadmap-gen:disabled{opacity:.6;cursor:wait;transform:none}
+.btn-roadmap-gen::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent);transform:translateX(-100%);transition:transform .6s ease}
+.btn-roadmap-gen:hover::before{transform:translateX(100%)}
+
+/* ── Premium Loading Animation ── */
+.roadmap-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 30px;gap:24px}
+.roadmap-loading-orb{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#06b6d4);position:relative;animation:orbPulse 2s ease-in-out infinite}
+.roadmap-loading-orb::after{content:'';position:absolute;inset:-8px;border-radius:50%;border:2px solid transparent;border-top-color:#3b82f6;border-right-color:#06b6d4;animation:spin 1.2s linear infinite}
+.roadmap-loading-orb::before{content:'🗺️';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:28px}
+@keyframes orbPulse{0%,100%{box-shadow:0 0 20px rgba(59,130,246,.3),0 0 60px rgba(59,130,246,.1)}50%{box-shadow:0 0 30px rgba(59,130,246,.5),0 0 80px rgba(6,182,212,.2)}}
+.roadmap-loading-text{font-family:var(--ff-mono);font-size:13px;color:var(--tx-muted);letter-spacing:2px;text-transform:uppercase}
+.roadmap-loading-bar{width:200px;height:3px;background:rgba(59,130,246,.15);border-radius:3px;overflow:hidden}
+.roadmap-loading-bar-fill{width:0%;height:100%;background:linear-gradient(90deg,#3b82f6,#06b6d4);border-radius:3px;animation:loadBarFill 12s ease-in-out forwards}
+@keyframes loadBarFill{0%{width:0%}30%{width:40%}60%{width:65%}80%{width:80%}95%{width:92%}100%{width:95%}}
 #resume-output{background:#fff!important;color:#000!important;animation:fadeIn .4s ease}
 .resume-hero{text-align:center;padding:60px 30px}
 .resume-hero-icon{font-size:64px;display:block;margin-bottom:20px;animation:float 3s ease-in-out infinite}
@@ -378,6 +466,17 @@ select.inp option{background:var(--bg-primary);color:var(--tx-primary)}
 <div class="bg-orb bg-orb-1"></div>
 <div class="bg-orb bg-orb-2"></div>
 <div class="bg-orb bg-orb-3"></div>
+
+<!-- Certificate Analysis Modal -->
+<div class="apply-modal-overlay" id="cert-modal">
+  <div class="apply-modal-box" style="max-width:800px;">
+    <div class="apply-modal-header">
+      <div class="apply-modal-title">🔬 Certificate Analysis Report</div>
+      <button class="apply-modal-close" onclick="document.getElementById('cert-modal').classList.remove('open')">&times;</button>
+    </div>
+    <div id="cert-modal-content" style="line-height:1.7;"></div>
+  </div>
+</div>
 
 <!-- ════════════════════════════════
      LOGIN / SIGNUP PAGE
@@ -557,13 +656,15 @@ select.inp option{background:var(--bg-primary);color:var(--tx-primary)}
 
         <!-- Certificate scanner -->
         <div style="text-align:left;">
-          <div class="scan-section-title">👁️ Vision AI Scanner</div>
+          <div class="scan-section-title">🔬 Vision AI Scanner</div>
           <label for="cert-upload" class="dropzone-label" id="drop-text">
             <span class="dropzone-icon">📄</span>
-            <span class="dropzone-text">Upload Certificate<br>to Extract Skills</span>
+            <span class="dropzone-text">Upload Certificate<br>for AI Analysis</span>
           </label>
           <input type="file" id="cert-upload" style="display:none;" accept="image/*" onchange="scanCertificate(event)">
           <div id="skill-tags"></div>
+          <div id="cert-analysis"></div>
+          <button class="btn btn-outline btn-sm" id="btn-view-analysis" onclick="openCertAnalysis()" style="display:none;width:100%;margin-top:10px;font-size:11px;padding:8px;">📊 View Full Analysis</button>
         </div>
       </div>
     </aside>
@@ -582,15 +683,20 @@ select.inp option{background:var(--bg-primary);color:var(--tx-primary)}
 
       <!-- ─── ROADMAP ─── -->
       <div id="view-roadmap">
-        <div class="card" style="margin-bottom:24px;">
-          <h2 class="section-title">Architect Your Future</h2>
-          <p class="section-sub">Select a discipline — the AI cross-references your academic year to generate a strict execution timeline with <strong>embedded YouTube tutorials</strong> and certified course links.</p>
-          <label class="lbl">Target Engineering Discipline</label>
-          <select class="inp" id="target-role" style="font-size:15px;padding:14px;margin-bottom:20px;">
-            <option>Software Engineer</option><option>Data Scientist</option>
-            <option>Cybersecurity Analyst</option><option>Cloud Architect</option><option>AI Engineer</option>
-          </select>
-          <button class="btn" id="btn-roadmap" onclick="generateRoadmap()" style="font-size:15px;padding:15px;">⚡ Synthesize Graphical Roadmap</button>
+        <div class="roadmap-hero" style="margin-bottom:24px;">
+          <span class="roadmap-hero-badge">🧬 AI-Powered Career Engine</span>
+          <h2 class="roadmap-hero-title">Architect Your Future</h2>
+          <p class="roadmap-hero-sub">Select a discipline — our AI cross-references your academic year to generate a <strong style="color:#60a5fa">strict execution timeline</strong> with embedded tutorials, certifications, and career milestones.</p>
+          <div class="roadmap-controls">
+            <div class="roadmap-select-wrap">
+              <label class="lbl">🎯 TARGET ENGINEERING DISCIPLINE</label>
+              <select class="inp" id="target-role">
+                <option>Software Engineer</option><option>Data Scientist</option>
+                <option>Cybersecurity Analyst</option><option>Cloud Architect</option><option>AI Engineer</option>
+              </select>
+            </div>
+            <button class="btn-roadmap-gen" id="btn-roadmap" onclick="generateRoadmap()">⚡ Synthesize Roadmap</button>
+          </div>
         </div>
         <div class="card" id="roadmap-output" style="display:none;">
           <div id="roadmap-content"></div>
@@ -865,7 +971,7 @@ select.inp option{background:var(--bg-primary);color:var(--tx-primary)}
      JAVASCRIPT
 ════════════════════════════════ -->
 <script>
-const API_BASE = "http://127.0.0.1:5000/api";
+const API_BASE = "http://127.0.0.1:5001/api";
 let isSignUp = true, userProfile = {}, chatHistory = [];
 let psychoQuestions = [], assessAnswers = [], assessIndex = 0;
 let quizDomain = 'Software Engineer', quizQuestions = [], quizAnswers = {};
@@ -951,7 +1057,7 @@ async function handleAuth(){
       if(userProfile.path_choice==='path2') switchView('discover');
       else switchView('roadmap');
     } else { alert('Error: '+data.message); }
-  } catch(e){ alert('Backend offline — start the Python API server (python api_Claude.py).'); }
+  } catch(e){ alert('Backend offline — start the Python API server (python app.py).'); }
   finally{ btn.textContent=orig; btn.disabled=false; }
 }
 
@@ -1096,14 +1202,36 @@ async function generateRoadmap(){
   const btn=$('btn-roadmap'), content=$('roadmap-content');
   btn.textContent='⚙️ Synthesizing…'; btn.disabled=true;
   $('roadmap-output').style.display='block';
-  content.innerHTML=`<div class="loading-state"><div class="spinner"></div><div class="loading-text">COMPILING NEURAL DATA · PLEASE WAIT</div></div>`;
+  content.innerHTML=`<div class="roadmap-loading">
+    <div class="roadmap-loading-orb"></div>
+    <div class="roadmap-loading-text">Compiling Neural Career Data</div>
+    <div class="roadmap-loading-bar"><div class="roadmap-loading-bar-fill"></div></div>
+  </div>`;
+  // Smooth scroll to the output
+  $('roadmap-output').scrollIntoView({behavior:'smooth',block:'start'});
   try {
     const res=await fetch(`${API_BASE}/generate_roadmap`,{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({name:userProfile.name,standard:userProfile.standard,role:$('target-role').value})});
     const data=await res.json();
     content.innerHTML=data.roadmap;
+    // Post-process: re-trigger stagger animation
+    requestAnimationFrame(()=>{
+      content.querySelectorAll(':scope > div').forEach((el,i)=>{
+        el.style.opacity='0';
+        el.style.animation=`roadmapChildFade .5s ease ${0.1+i*0.08}s forwards`;
+      });
+    });
   } catch(e){ content.innerHTML="<p style='color:var(--danger);font-weight:600;padding:20px;'>⚠️ Connection failed — is the backend running?</p>"; }
-  finally{ btn.textContent='⚡ Synthesize Graphical Roadmap'; btn.disabled=false; }
+  finally{ btn.textContent='⚡ Synthesize Roadmap'; btn.disabled=false; }
+  // Trigger YouTube section after roadmap is generated
+  const role  = $('target-role')?.value || '';
+  const ytSec = $('yt-section-roadmap');
+  if (ytSec && role) {
+    ytSec.style.display = 'block';
+    buildYtSkillPills(role);
+    const firstPill = $('yt-skill-pills')?.querySelector('.skill-pill-search');
+    if (firstPill) firstPill.click();
+  }
 }
 
 /* ── RESUME ── */
@@ -1129,26 +1257,157 @@ function printResume(){
   w.document.close(); w.print();
 }
 
-/* ── CERTIFICATE SCANNER ── */
+/* ── CERTIFICATE SCANNER — PREMIUM ── */
+let lastCertAnalysis = null;
+
 async function scanCertificate(event){
   const file=event.target.files[0]; if(!file) return;
   const drop=$('drop-text');
-  drop.innerHTML=`<div style="font-size:26px;animation:spin 1s linear infinite;">⚙️</div><span class="dropzone-text">Scanning…</span>`;
+  drop.innerHTML=`<div style="font-size:26px;animation:spin 1s linear infinite;">🔬</div><span class="dropzone-text">Analyzing Certificate…<br><small style="font-size:9px;color:var(--tx-muted);letter-spacing:0.5px;">AI Vision Processing</small></span>`;
   const reader=new FileReader();
   reader.onload=async function(e){
     try {
       const res=await fetch(`${API_BASE}/scan_certificate`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image:e.target.result})});
       const data=await res.json();
       const box=$('skill-tags'); box.innerHTML='';
-      data.skills.split(',').forEach((s,i)=>{
-        const tag=document.createElement('span');
-        tag.className='skill-tag'; tag.style.animationDelay=(i*.06)+'s'; tag.textContent=s.trim(); box.appendChild(tag);
-      });
-      drop.innerHTML=`<div style="font-size:28px;">✅</div><span class="dropzone-text" style="color:var(--success);">Skills Extracted!</span>`;
-      setTimeout(()=>{ drop.innerHTML=`<span class="dropzone-icon">📄</span><span class="dropzone-text">Upload Another Certificate</span>`; },3000);
-    } catch(er){ drop.innerHTML=`<span class="dropzone-icon">❌</span><span class="dropzone-text" style="color:var(--danger);">Scan Failed</span>`; }
+      const analysisBox=$('cert-analysis'); analysisBox.innerHTML='';
+      const viewBtn=$('btn-view-analysis');
+
+      // Show skill tags with proficiency-based coloring
+      const profColors = {
+        'Advanced': {bg:'rgba(34,197,94,0.15)',color:'#4ade80',border:'rgba(34,197,94,0.3)'},
+        'Intermediate': {bg:'rgba(59,130,246,0.15)',color:'#60a5fa',border:'rgba(59,130,246,0.3)'},
+        'Beginner': {bg:'rgba(251,191,36,0.15)',color:'#fbbf24',border:'rgba(251,191,36,0.3)'}
+      };
+
+      if(data.analysis && data.analysis.skills){
+        // Rich structured analysis available
+        lastCertAnalysis = data.analysis;
+        data.analysis.skills.forEach((s,i)=>{
+          const pc = profColors[s.proficiency] || profColors['Intermediate'];
+          const tag=document.createElement('span');
+          tag.className='skill-tag';
+          tag.style.cssText=`animation-delay:${i*.06}s;background:${pc.bg};color:${pc.color};border-color:${pc.border};cursor:help;`;
+          tag.title=`${s.category} • ${s.proficiency}`;
+          tag.textContent=s.name;
+          box.appendChild(tag);
+        });
+
+        // Show mini summary
+        const a = data.analysis;
+        const demandColor = a.career_relevance?.industry_demand === 'High' ? '#4ade80' : a.career_relevance?.industry_demand === 'Medium' ? '#fbbf24' : '#94a3b8';
+        analysisBox.innerHTML=`
+          <div style="margin-top:12px;padding:12px;background:var(--bg-tab);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:11px;">
+            <div style="font-family:var(--ff-display);font-weight:700;font-size:12px;color:var(--tx-primary);margin-bottom:6px;">📜 ${a.certificate_name || 'Certificate'}</div>
+            <div style="color:var(--tx-muted);margin-bottom:4px;">🏢 ${a.issuing_organization || 'Unknown Issuer'}</div>
+            ${a.completion_date && a.completion_date !== 'Not visible' ? `<div style="color:var(--tx-muted);margin-bottom:4px;">📅 ${a.completion_date}</div>` : ''}
+            <div style="margin-top:6px;display:flex;align-items:center;gap:6px;">
+              <span style="font-weight:700;color:var(--tx-muted);">Demand:</span>
+              <span style="color:${demandColor};font-weight:700;">${a.career_relevance?.industry_demand || 'N/A'}</span>
+            </div>
+          </div>`;
+        viewBtn.style.display='block';
+        drop.innerHTML=`<div style="font-size:28px;">✅</div><span class="dropzone-text" style="color:var(--success);">Analysis Complete!</span>`;
+      } else {
+        // Fallback — simple skills CSV
+        lastCertAnalysis = null;
+        data.skills.split(',').forEach((s,i)=>{
+          const tag=document.createElement('span');
+          tag.className='skill-tag'; tag.style.animationDelay=(i*.06)+'s'; tag.textContent=s.trim(); box.appendChild(tag);
+        });
+        viewBtn.style.display='none';
+        drop.innerHTML=`<div style="font-size:28px;">✅</div><span class="dropzone-text" style="color:var(--success);">Skills Extracted!</span>`;
+      }
+
+      setTimeout(()=>{ drop.innerHTML=`<span class="dropzone-icon">📄</span><span class="dropzone-text">Upload Another Certificate</span>`; },4000);
+    } catch(er){ drop.innerHTML=`<span class="dropzone-icon">❌</span><span class="dropzone-text" style="color:var(--danger);">Scan Failed — Try Again</span>`; }
   };
   reader.readAsDataURL(file);
+}
+
+function openCertAnalysis(){
+  if(!lastCertAnalysis) return;
+  const a = lastCertAnalysis;
+  const modal = $('cert-modal');
+  const content = $('cert-modal-content');
+
+  const profColors = {'Advanced':'#4ade80','Intermediate':'#60a5fa','Beginner':'#fbbf24'};
+  const catColors = {'Programming':'#3b82f6','Framework':'#06b6d4','Tool':'#a855f7','Concept':'#f59e0b','Cloud':'#22c55e','Database':'#f43f5e','Security':'#ef4444','AI/ML':'#8b5cf6','Other':'#94a3b8'};
+
+  const skillsHtml = (a.skills||[]).map(s=>{
+    const pc = profColors[s.proficiency]||'#60a5fa';
+    const cc = catColors[s.category]||'#94a3b8';
+    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--bg-tab);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:6px;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${cc};flex-shrink:0;"></span>
+        <span style="font-weight:700;font-size:13px;color:var(--tx-primary);">${s.name}</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-family:var(--ff-mono);font-size:10px;color:var(--tx-muted);text-transform:uppercase;letter-spacing:0.8px;">${s.category}</span>
+        <span style="font-size:11px;font-weight:700;color:${pc};background:${pc}18;padding:3px 10px;border-radius:20px;border:1px solid ${pc}33;">${s.proficiency}</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  const rolesHtml = (a.career_relevance?.matching_roles||[]).map(r=>
+    `<span style="display:inline-block;margin:3px;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;background:rgba(59,130,246,0.12);color:var(--tx-accent);border:1px solid rgba(59,130,246,0.25);">${r}</span>`
+  ).join('');
+
+  const nextCertsHtml = (a.next_certifications||[]).map((c,i)=>
+    `<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg-tab);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:6px;">
+      <span style="font-size:14px;font-weight:800;color:var(--tx-accent);font-family:var(--ff-mono);width:24px;">${i+1}.</span>
+      <span style="font-weight:600;font-size:13px;color:var(--tx-primary);">${c}</span>
+    </div>`
+  ).join('');
+
+  const demandColor = a.career_relevance?.industry_demand === 'High' ? '#4ade80' : a.career_relevance?.industry_demand === 'Medium' ? '#fbbf24' : '#94a3b8';
+
+  content.innerHTML = `
+    <!-- Certificate Header -->
+    <div style="background:linear-gradient(135deg,rgba(15,23,42,0.95),rgba(30,58,95,0.6));border:1px solid var(--border);border-radius:var(--radius-md);padding:24px;margin-bottom:20px;position:relative;overflow:hidden;">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#3b82f6,#06b6d4,#22c55e);"></div>
+      <div style="font-family:var(--ff-display);font-size:20px;font-weight:800;color:var(--tx-primary);margin-bottom:8px;">📜 ${a.certificate_name || 'Certificate'}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:16px;font-size:13px;color:var(--tx-secondary);">
+        <span>🏢 ${a.issuing_organization || 'Unknown'}</span>
+        ${a.completion_date && a.completion_date !== 'Not visible' ? `<span>📅 ${a.completion_date}</span>` : ''}
+        ${a.credential_id && a.credential_id !== 'Not visible' ? `<span>🔑 ID: ${a.credential_id}</span>` : ''}
+      </div>
+      ${a.summary ? `<p style="margin-top:12px;font-size:13px;color:var(--tx-secondary);line-height:1.7;">${a.summary}</p>` : ''}
+    </div>
+
+    <!-- Skills Breakdown -->
+    <div style="margin-bottom:20px;">
+      <h3 style="font-family:var(--ff-display);font-size:16px;font-weight:800;color:var(--tx-accent);margin-bottom:12px;">🛠️ Skills Identified (${(a.skills||[]).length})</h3>
+      ${skillsHtml}
+    </div>
+
+    <!-- Career Relevance -->
+    <div style="margin-bottom:20px;">
+      <h3 style="font-family:var(--ff-display);font-size:16px;font-weight:800;color:var(--tx-accent);margin-bottom:12px;">🎯 Career Relevance</h3>
+      <div style="background:var(--bg-tab);border:1px solid var(--border);border-radius:var(--radius-md);padding:18px;">
+        <div style="margin-bottom:12px;">
+          <span style="font-size:12px;font-weight:700;color:var(--tx-muted);text-transform:uppercase;letter-spacing:1px;">Matching Roles</span>
+          <div style="margin-top:8px;">${rolesHtml || '<span style="color:var(--tx-muted);font-size:13px;">No specific roles identified</span>'}</div>
+        </div>
+        <div style="display:flex;gap:24px;flex-wrap:wrap;margin-top:12px;">
+          <div>
+            <span style="font-size:11px;font-weight:700;color:var(--tx-muted);text-transform:uppercase;letter-spacing:1px;">Industry Demand</span>
+            <div style="margin-top:4px;font-size:16px;font-weight:800;color:${demandColor};">${a.career_relevance?.industry_demand || 'N/A'}</div>
+          </div>
+        </div>
+        ${a.career_relevance?.salary_impact ? `<p style="margin-top:12px;font-size:12px;color:var(--tx-secondary);line-height:1.6;padding:10px 12px;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);border-radius:var(--radius-sm);">💰 ${a.career_relevance.salary_impact}</p>` : ''}
+      </div>
+    </div>
+
+    <!-- Next Steps -->
+    ${(a.next_certifications||[]).length > 0 ? `
+    <div>
+      <h3 style="font-family:var(--ff-display);font-size:16px;font-weight:800;color:var(--tx-accent);margin-bottom:12px;">🚀 Recommended Next Certifications</h3>
+      ${nextCertsHtml}
+    </div>` : ''}
+  `;
+
+  modal.classList.add('open');
 }
 
 /* ── CHAT ── */
@@ -1325,55 +1584,7 @@ async function submitQuiz(){
   finally{ btn.textContent='✅ Submit & See Results'; btn.disabled=false; }
 }
 
-/* ── JOBS ── */
-async function loadJobs() {
-  const grid    = $('jobs-grid'), countEl = $('jobs-count');
-  if(!grid) return;
-  const role = $('job-filter-role')?.value || 'All';
-  const type = $('job-filter-type')?.value || 'All';
-  const loc  = $('job-filter-loc')?.value  || 'All';
-  grid.innerHTML = `<div class="loading-state" style="grid-column:1/-1;"><div class="spinner"></div><div class="loading-text">FETCHING OPPORTUNITIES…</div></div>`;
-  try {
-    const res  = await fetch(`${API_BASE}/get_jobs`, {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({role,type,location:loc})
-    });
-    const data = await res.json();
-    const jobs = data.jobs || [];
-    if(countEl) countEl.textContent = `${jobs.length} job${jobs.length!==1?'s':''} found`;
-    if(!jobs.length) {
-      grid.innerHTML = `<div class="card" style="grid-column:1/-1;text-align:center;padding:40px;color:var(--tx-muted);">No jobs found for these filters.</div>`;
-      return;
-    }
-    // Store jobs globally so the modal can access full data
-    window._lastJobs = jobs;
-    grid.innerHTML = jobs.map((j,i) => `
-      <div class="job-card">
-        <span class="job-logo">${j.Logo_Emoji||'🏢'}</span>
-        <div class="job-role">${j.Role}</div>
-        <div class="job-company">${j.Company}</div>
-        ${j.Industry ? `<div class="job-industry">🏭 ${j.Industry}</div>` : ''}
-        <div class="job-meta">
-          <span class="job-chip">${j.Location}</span>
-          <span class="job-chip ${j.Type==='Internship'?'green':'blue'}">${j.Type}</span>
-          <span class="job-chip">Posted ${j.Posted||'Recently'}</span>
-        </div>
-        <div class="job-salary">💰 ${j.Salary}</div>
-        <div class="job-skills">🛠 ${j.Skills_Required}</div>
-        <div style="display:flex;gap:8px;margin-top:4px;">
-          <button class="btn-apply" style="flex:1;" onclick="openApplyModal(window._lastJobs[${i}])">
-            ✉️ AI Cover Letter
-          </button>
-          <a class="btn-apply" href="${j.Apply_Link}" target="_blank"
-             style="flex:1;background:transparent;border:1.5px solid var(--border-hover);color:var(--tx-accent);text-decoration:none;">
-            🔗 Apply
-          </a>
-        </div>
-      </div>`).join('');
-  } catch(e) {
-    grid.innerHTML = `<div class="card" style="grid-column:1/-1;text-align:center;padding:30px;color:var(--danger);">⚠️ Could not load jobs. Is backend running?</div>`;
-  }
-}async function loadJobs() {
+/* ── JOBS ── */async function loadJobs() {
   const grid = $('jobs-grid'), countEl = $('jobs-count');
   if (!grid) return;
   const role = $('job-filter-role')?.value || 'All';
@@ -1618,20 +1829,7 @@ async function loadYtVideos(skill, role, btn) {
   }
 }
 
-// ── Trigger YouTube section after roadmap is generated ────────
-const _origGenerateRoadmap = typeof generateRoadmap !== 'undefined' ? generateRoadmap : null;
-generateRoadmap = async function() {
-  if (_origGenerateRoadmap) await _origGenerateRoadmap.call(this);
-  const role  = $('target-role')?.value || '';
-  const ytSec = $('yt-section-roadmap');
-  if (ytSec && role) {
-    ytSec.style.display = 'block';
-    buildYtSkillPills(role);
-    // Auto-load the FIRST skill track immediately
-    const firstPill = $('yt-skill-pills')?.querySelector('.skill-pill-search');
-    if (firstPill) firstPill.click();
-  }
-};
+// YouTube section is now triggered directly inside generateRoadmap() above.
 
 
 </script>

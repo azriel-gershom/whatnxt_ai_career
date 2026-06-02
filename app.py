@@ -3,7 +3,9 @@ from flask_cors import CORS
 from google import genai
 from google.genai import types
 import sqlite3, pandas as pd, base64, json, re, os, time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
+from openai import OpenAI
 
 # ─── Base Paths ──────────────────────────────────────────────
 BASE_DIR  = Path(__file__).resolve().parent
@@ -21,67 +23,159 @@ app = Flask(__name__)
 CORS(app)
 
 # ═══════════════════════════════════════════════════════════════
-# 🔑 API KEYS — loaded from .env file (never hardcode secrets!)
-# Get free keys at: https://aistudio.google.com/apikey
+# 🔑 API KEYS — hot-reloaded from .env on every request
+# Gemini: https://aistudio.google.com/apikey
 # ═══════════════════════════════════════════════════════════════
 from dotenv import load_dotenv
 load_dotenv(BASE_DIR / '.env')
 
 GEMINI_KEYS = [k.strip() for k in os.environ.get('GEMINI_KEYS', '').split(',') if k.strip()]
-if not GEMINI_KEYS:
-    print("⚠️  No GEMINI_KEYS found! Copy .env.example to .env and add your keys.")
-    print("   Get free keys at: https://aistudio.google.com/apikey")
+if GEMINI_KEYS:
+    print(f"✅ {len(GEMINI_KEYS)} Gemini key(s) loaded (PRIMARY)")
+else:
+    print("⚠️  No GEMINI_KEYS found — Gemini disabled.")
+
+OPENROUTER_API_KEY = os.environ.get('OPENROUTER_API_KEY', '').strip()
+if OPENROUTER_API_KEY:
+    print(f"✅ OpenRouter API key loaded (FALLBACK — Gemma 4 26B)")
+else:
+    print("ℹ️  No OPENROUTER_API_KEY — OpenRouter fallback disabled.")
+
 
 YOUTUBE_API_KEY = os.environ.get('YOUTUBE_API_KEY', '')
 _key_idx = 0
 
-def get_client():
-    return genai.Client(api_key=GEMINI_KEYS[_key_idx % len(GEMINI_KEYS)])
+def _reload_keys():
+    """Hot-reload API keys from .env so you never need to restart the server."""
+    global GEMINI_KEYS, OPENROUTER_API_KEY
+    load_dotenv(BASE_DIR / '.env', override=True)
+    new_or = os.environ.get('OPENROUTER_API_KEY', '').strip()
+    if new_or and new_or != OPENROUTER_API_KEY:
+        OPENROUTER_API_KEY = new_or
+        print(f"🔄 Hot-reloaded OpenRouter API key from .env")
+    fresh = [k.strip() for k in os.environ.get('GEMINI_KEYS', '').split(',') if k.strip()]
+    if fresh and fresh != GEMINI_KEYS:
+        GEMINI_KEYS = fresh
+        print(f"🔄 Hot-reloaded {len(GEMINI_KEYS)} Gemini key(s) from .env")
+    return GEMINI_KEYS
 
-# ── Models in priority order ─────────────────────────────────
-MODELS = [
-    "gemini-1.5-flash",
-    "gemini-1.5-pro",
-    "gemini-2.0-flash",
+def get_client():
+    keys = _reload_keys()
+    if not keys:
+        raise Exception("No GEMINI_KEYS configured! Add keys to .env file.")
+    return genai.Client(api_key=keys[_key_idx % len(keys)])
+
+# ── Gemini models (PRIMARY) ──
+GEMINI_MODELS = [
+    "gemini-2.5-flash",
     "gemini-2.0-flash-lite",
+    "gemini-2.0-flash",
 ]
+# Keep legacy reference
+MODELS = GEMINI_MODELS
+
+# ── OpenRouter model (FALLBACK) ──
+OPENROUTER_MODEL = "google/gemma-4-26b-a4b-it"
+
+
 
 # ═══════════════════════════════════════════════════════════════
-# 🤖 SMART AI CALLER — retries + key rotation + model fallback
+# 🌐 OPENROUTER CALLER — Gemma 4 26B via OpenRouter (FALLBACK)
+# ═══════════════════════════════════════════════════════════════
+def call_openrouter(prompt, max_output_tokens=8192):
+    """Call OpenRouter API — fallback provider for Gemma 4 26B."""
+    _reload_keys()
+    if not OPENROUTER_API_KEY:
+        raise Exception("No OPENROUTER_API_KEY configured. Get key at https://openrouter.ai/keys")
+    client = OpenAI(api_key=OPENROUTER_API_KEY, base_url="https://openrouter.ai/api/v1")
+    try:
+        print(f"🔄 Trying OpenRouter {OPENROUTER_MODEL}...")
+        resp = client.chat.completions.create(
+            model=OPENROUTER_MODEL,
+            messages=[
+                {"role": "system", "content": "You are WhatNxt AI, an expert career guidance system. You generate extremely detailed, comprehensive, beautiful raw HTML content with ALL inline CSS. You NEVER use markdown. You ALWAYS output complete, long, detailed responses. You MUST generate ALL sections requested — never truncate or skip sections. Output raw HTML only."},
+                {"role": "user", "content": prompt}
+            ],
+            max_tokens=max_output_tokens,
+            temperature=0.8,
+        )
+        text = resp.choices[0].message.content
+        if text:
+            print(f"✅ Success — OpenRouter {OPENROUTER_MODEL}")
+            return text
+        raise Exception("Empty response from OpenRouter")
+    except Exception as e:
+        err = str(e)
+        print(f"⚠️  OpenRouter {OPENROUTER_MODEL}: {err[:150]}")
+        raise
+
+
+
+# ═══════════════════════════════════════════════════════════════
+# 🤖 SMART AI CALLER — Gemini (PRIMARY) → OpenRouter (FALLBACK)
 # ═══════════════════════════════════════════════════════════════
 def call_gemini(prompt, max_output_tokens=8192):
     global _key_idx
-    for model in MODELS:
-        for attempt in range(2):
-            try:
-                client = get_client()
-                print(f"🔄 Trying {model} with key[{_key_idx % len(GEMINI_KEYS)}]...")
-                resp = client.models.generate_content(
-                    model=model,
-                    contents=prompt,
-                    config=types.GenerateContentConfig(
+    _reload_keys()
+
+    # ── Phase 1: Try all Gemini models (PRIMARY) ──
+    total_keys = len(GEMINI_KEYS)
+    if total_keys > 0:
+        for model in GEMINI_MODELS:
+            for attempt in range(total_keys * 2):
+                try:
+                    client = get_client()
+                    key_num = _key_idx % total_keys
+                    print(f"🔄 Trying {model} with key[{key_num}] (attempt {attempt+1})...")
+                    cfg = types.GenerateContentConfig(
                         max_output_tokens=max_output_tokens,
                         temperature=0.8,
                     )
-                )
-                print(f"✅ Success — {model}")
-                return resp.text
-            except Exception as e:
-                err = str(e)
-                if "429" in err or "RESOURCE_EXHAUSTED" in err or "quota" in err.lower():
-                    print(f"⚠️  Key[{_key_idx % len(GEMINI_KEYS)}] quota hit — rotating key...")
-                    _key_idx += 1
-                    time.sleep(1)
-                elif "503" in err or "UNAVAILABLE" in err:
-                    print(f"⚠️  {model} busy, retrying in 3s...")
-                    time.sleep(3)
-                elif "404" in err or "NOT_FOUND" in err:
-                    print(f"⚠️  {model} not found, trying next...")
-                    break
-                else:
-                    print(f"⚠️  {model}: {err[:120]}")
-                    time.sleep(2)
-    raise Exception("All Gemini models exhausted. Add a new API key at https://aistudio.google.com/apikey")
+                    if "2.5" in model:
+                        cfg.thinking_config = types.ThinkingConfig(thinking_budget=0)
+                    resp = client.models.generate_content(
+                        model=model,
+                        contents=prompt,
+                        config=cfg,
+                    )
+                    text = resp.text
+                    if text:
+                        print(f"✅ Success — {model}")
+                        return text
+                    else:
+                        print(f"⚠️  {model} returned empty response, retrying...")
+                        continue
+                except Exception as e:
+                    err = str(e)
+                    if "429" in err or "RESOURCE_EXHAUSTED" in err or "quota" in err.lower():
+                        _key_idx += 1
+                        if (_key_idx % total_keys) == 0:
+                            wait = min(8, 3 * (attempt // total_keys + 1))
+                            print(f"⚠️  All keys exhausted on {model} — waiting {wait}s...")
+                            time.sleep(wait)
+                        else:
+                            print(f"⚠️  Key[{key_num}] quota hit — rotating to key[{_key_idx % total_keys}]...")
+                            time.sleep(0.5)
+                    elif "503" in err or "UNAVAILABLE" in err:
+                        print(f"⚠️  {model} busy, retrying in 2s...")
+                        time.sleep(2)
+                    elif "404" in err or "NOT_FOUND" in err:
+                        print(f"⚠️  {model} not available, trying next model...")
+                        break
+                    else:
+                        print(f"⚠️  {model}: {err[:120]}")
+                        _key_idx += 1
+                        time.sleep(1)
+
+    # ── Phase 2: Try OpenRouter (Gemma 4 26B — FALLBACK) ──
+    if OPENROUTER_API_KEY:
+        try:
+            print(f"⚠️  All Gemini models exhausted — falling back to OpenRouter...")
+            return call_openrouter(prompt, max_output_tokens)
+        except Exception as or_err:
+            print(f"⚠️  OpenRouter fallback also failed: {or_err}")
+
+    raise Exception("All AI providers exhausted. Add a new API key to .env")
 
 # ─── Load Datasets ───────────────────────────────────────────
 def load_csv(name):
@@ -357,6 +451,75 @@ def generate_roadmap():
                     f'text-decoration:none;">{tag} — {skills_label}</a>'
                 )
 
+    # ── Build Certification Links ──
+    CERT_URLS = {
+        "aws cloud practitioner": "https://aws.amazon.com/certification/certified-cloud-practitioner/",
+        "aws solutions architect associate": "https://aws.amazon.com/certification/certified-solutions-architect-associate/",
+        "aws developer": "https://aws.amazon.com/certification/certified-developer-associate/",
+        "aws ml specialty": "https://aws.amazon.com/certification/certified-machine-learning-specialty/",
+        "oracle java se": "https://education.oracle.com/java-se-programmer/pexam_1Z0-829",
+        "meta back-end developer": "https://www.coursera.org/professional-certificates/meta-back-end-developer",
+        "meta front-end developer": "https://www.coursera.org/professional-certificates/meta-front-end-developer",
+        "spring professional": "https://www.vmware.com/learning/certification/spring-professional-develop-exam.html",
+        "docker certified associate": "https://training.mirantis.com/dca-certification-exam/",
+        "google data analytics": "https://www.coursera.org/professional-certificates/google-data-analytics",
+        "google cybersecurity": "https://www.coursera.org/professional-certificates/google-cybersecurity",
+        "google ux design": "https://www.coursera.org/professional-certificates/google-ux-design",
+        "google cloud ace": "https://cloud.google.com/learn/certification/cloud-engineer",
+        "google professional cloud architect": "https://cloud.google.com/learn/certification/cloud-architect",
+        "gcp data engineer": "https://cloud.google.com/learn/certification/data-engineer",
+        "ibm data science": "https://www.coursera.org/professional-certificates/ibm-data-science",
+        "coursera ml specialization": "https://www.coursera.org/specializations/machine-learning-introduction",
+        "tableau desktop specialist": "https://www.tableau.com/learn/certification/desktop-specialist",
+        "microsoft power bi da-100": "https://learn.microsoft.com/en-us/credentials/certifications/data-analyst-associate/",
+        "comptia security+": "https://www.comptia.org/certifications/security",
+        "comptia pentest+": "https://www.comptia.org/certifications/pentest",
+        "comptia cysa+": "https://www.comptia.org/certifications/cybersecurity-analyst",
+        "ceh": "https://www.eccouncil.org/programs/certified-ethical-hacker-ceh/",
+        "oscp": "https://www.offsec.com/courses/pen-200/",
+        "ejpt": "https://security.ine.com/certifications/ejpt-certification/",
+        "splunk core certified user": "https://www.splunk.com/en_us/training/certification-track/splunk-core-certified-user.html",
+        "sans giac": "https://www.giac.org/certifications/",
+        "az-900": "https://learn.microsoft.com/en-us/credentials/certifications/azure-fundamentals/",
+        "az-104": "https://learn.microsoft.com/en-us/credentials/certifications/azure-administrator/",
+        "az-305": "https://learn.microsoft.com/en-us/credentials/certifications/azure-solutions-architect/",
+        "kubernetes cka": "https://www.cncf.io/training/certification/cka/",
+        "terraform associate": "https://www.hashicorp.com/en/certification/terraform-associate",
+        "tensorflow developer": "https://www.tensorflow.org/certificate",
+        "deeplearning.ai tensorflow developer": "https://www.coursera.org/professional-certificates/tensorflow-in-practice",
+        "deeplearning.ai specializations": "https://www.deeplearning.ai/courses/",
+        "nvidia dli": "https://www.nvidia.com/en-us/training/",
+        "mongodb developer": "https://learn.mongodb.com/pages/mongodb-associate-developer-exam",
+        "mlops zoomcamp": "https://github.com/DataTalksClub/mlops-zoomcamp",
+        "gcp professional ml engineer": "https://cloud.google.com/learn/certification/machine-learning-engineer",
+    }
+    cert_blocks = []
+    for r in rows:
+        certs_raw = r.get('Certifications', '')
+        if not certs_raw or str(certs_raw) == 'nan':
+            continue
+        for cert_name in str(certs_raw).split(','):
+            cert_name = cert_name.strip()
+            if not cert_name:
+                continue
+            cert_key = cert_name.lower()
+            url = CERT_URLS.get(cert_key, '')
+            if not url:
+                for key, link in CERT_URLS.items():
+                    if key in cert_key or cert_key in key:
+                        url = link
+                        break
+            if not url:
+                url = f"https://www.google.com/search?q={cert_name.replace(' ', '+')}+certification+official"
+            cert_blocks.append(
+                f'<a href="{url}" target="_blank" style="display:inline-block;margin:4px;'
+                f'background:#a855f722;color:#a855f7;border:1px solid #a855f744;'
+                f'border-radius:20px;padding:8px 16px;font-weight:700;font-size:13px;'
+                f'text-decoration:none;">🏅 {cert_name} →</a>'
+            )
+    cert_blocks = list(dict.fromkeys(cert_blocks))
+    cert_html = "\n".join(cert_blocks) or '<p style="color:#64748b;">Check Coursera and Google for certifications.</p>'
+
     yt_html  = "\n".join(yt_blocks) or '<p style="color:#64748b;">No videos found for this role.</p>'
     crs_html = "\n".join(course_blocks) or '<p style="color:#64748b;">Check Coursera and Udemy for courses.</p>'
     job_title = rows[0].get('Demo_Job_Title','Software Developer') if rows else 'Software Developer'
@@ -364,89 +527,172 @@ def generate_roadmap():
     salary    = rows[0].get('Salary_Range','₹6–20 LPA') if rows else '₹6–20 LPA'
     companies = rows[0].get('Top_Companies','TCS, Infosys, Wipro, Google, Amazon') if rows else 'TCS, Infosys, Google, Amazon'
 
-    prompt = f"""You are WhatNxt AI — India's most advanced Career Guidance System. Generate an EXTREMELY DETAILED, BEAUTIFUL, COMPREHENSIVE HTML career roadmap page. This must look STUNNING and be packed with useful, India-specific information.
+    prompt = f"""You are WhatNxt AI — India's #1 AI Career Guidance Platform. You MUST generate an EXTREMELY LONG, DETAILED, STRUCTURED, COMPREHENSIVE HTML career roadmap. This is a premium product — the output should feel like a ₹50,000 career consultation report.
 
-STUDENT: {name} | YEAR: {std} | TARGET ROLE: {role}
-CAREER DATA FROM DATABASE: {ctx}
+STUDENT PROFILE:
+• Name: {name}
+• Academic Year: {std}
+• Target Role: {role}
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-MANDATORY SECTIONS — MAKE EACH ONE RICH:
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CAREER INTELLIGENCE DATA:
+{ctx}
 
-1. 🎯 HERO BANNER
-   Large dark banner (background: linear-gradient(135deg,#0f172a,#1e3a5f)). 
-   Show: student name "{name}", role "{role}", motivational tagline, salary "{salary}".
-   Big colorful gradient text for the role name.
+SALARY RANGE: {salary}
+TOP COMPANIES: {companies}
+DREAM JOB: {job_title} at {company}
 
-2. 📊 4 STAT CARDS IN A ROW
-   - 💰 Starting Salary: {salary}
-   - 🏢 Top Companies: first 3 from "{companies}"
-   - ⏱️ Time to Job Ready: calculate based on year {std}
-   - 🎓 Must-Have Certifications: pick 3 from career data
-   Cards: background #1e293b, colorful left borders, rounded corners.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+MANDATORY OUTPUT — YOU MUST GENERATE ALL 12 SECTIONS BELOW.
+DO NOT SKIP, TRUNCATE, OR SHORTEN ANY SECTION.
+EACH SECTION MUST BE WRAPPED IN ITS OWN <div> WITH INLINE CSS.
+MINIMUM TOTAL OUTPUT: 2500+ WORDS OF HTML CONTENT.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-3. 🗓️ YEAR-BY-YEAR ROADMAP CARDS
-   Create a beautiful timeline card for EACH year from "{std}" to Year 4.
-   Each card MUST have:
-   ✅ 6-8 SPECIFIC skills (not generic — e.g. "Python Pandas for data wrangling" not "Python")
-   ✅ 2-3 project ideas with brief descriptions
-   ✅ Certifications to earn
-   ✅ Quarterly breakdown (Q1/Q2/Q3/Q4 goals)
-   ✅ End-of-year target (internship / job / promotion)
-   Card colors: Year1=border-left:#3b82f6, Year2=#06b6d4, Year3=#22c55e, Year4=#f59e0b
-   Card background: #1e293b, padding 20px, border-radius 12px, margin-bottom 16px
+SECTION 1: 🎯 HERO BANNER
+<div style="background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#0f172a 100%);border-radius:20px;padding:48px 36px;text-align:center;position:relative;overflow:hidden;border:1px solid #334155;margin-bottom:20px;">
+• Role "{role}" as <h1> with gradient text (background:linear-gradient(135deg,#3b82f6,#06b6d4,#22c55e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:38px;font-weight:900)
+• Address student "{name}" personally with an inspiring message
+• Show salary "{salary}" in a glowing accent badge
+• Add a motivational subtitle like "Your personalized career blueprint starts here"
+</div>
 
-4. 🛠️ SKILLS MATRIX — Two styled columns:
-   LEFT: Technical Skills (12+ skills as colorful badge spans — background color chips)
-   RIGHT: Soft Skills (6 skills as badge spans)
-   
-5. 📺 LEARNING RESOURCES
-   Section title with 📺 emoji. Show these embedded videos:
-   {yt_html}
+SECTION 2: 📊 KEY METRICS DASHBOARD — 4 Stat Cards
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:20px;">
+Card 1: 💰 Expected Salary — {salary} — show entry, mid, senior ranges
+Card 2: 🏢 Target Companies — list 4-5 from {companies}
+Card 3: ⏱️ Time to Job-Ready — realistic timeline based on {std}
+Card 4: 🎓 Required Certifications — count + top 2 names
+Each card: background:#1e293b; border-left:4px solid [unique color]; border-radius:16px; padding:22px
+</div>
 
-6. 📚 COURSES & RESOURCES
-   Section title. Show all these links as styled pill buttons:
-   {crs_html}
+SECTION 3: 🗓️ COMPLETE 4-YEAR CAREER TIMELINE (THIS IS THE MOST IMPORTANT SECTION — MUST BE VERY DETAILED)
+Generate 4 separate year cards. Each year MUST contain ALL of the following:
 
-7. 🏢 TOP COMPANIES HIRING TABLE
-   Styled HTML table (dark header #1e3a5f) with 8 companies:
-   Columns: Company | City | Salary Range | What They Look For | How to Apply
-   Use real companies from: {companies} plus others relevant to {role}
+YEAR 1 (Color: #3b82f6):
+• <h3> with year number + theme name (e.g., "Year 1 — Building the Foundation")
+• Q1 (Months 1-3): 4 specific tasks with technologies
+• Q2 (Months 4-6): 4 specific tasks with technologies
+• Q3 (Months 7-9): 3 specific tasks + 1 mini-project
+• Q4 (Months 10-12): 3 specific tasks + 1 project
+• 🛠️ Skills to Master: List 8 specific skills as colored badge spans
+• 📁 Projects: 2-3 detailed project ideas with tech stacks
+• 🏅 Certifications: 1-2 specific certifications to pursue
+• ✅ Year-End Milestone: What student should be able to do by year end
 
-8. 🎯 DREAM JOB SPOTLIGHT
-   Highlighted box (gradient border): {job_title} at {company}
-   Include: role description (3 sentences), required skills checklist (6 items with ✅),
-   interview tips (5 specific tips), salary negotiation advice.
+YEAR 2 (Color: #06b6d4): Same structure as Year 1 but with intermediate content
+YEAR 3 (Color: #22c55e): Same structure but with advanced/specialization content  
+YEAR 4 (Color: #f59e0b): Same structure but with placement prep, final projects, interview content
 
-9. 📅 FIRST 30 DAYS ACTION PLAN
-   4 weekly cards (Week 1, 2, 3, 4) each with 4-5 specific daily tasks.
-   Card background #0f172a, colored top border, emoji per task.
+Each year card: background:#1e293b; border-radius:16px; padding:28px; border-left:5px solid [year color]; margin-bottom:16px
 
-10. 🚀 PRO TIPS FOR {role.upper()} IN INDIA
-    8 specific, actionable tips. Each with emoji, bold title, 2-sentence explanation.
+SECTION 4: 🛠️ COMPREHENSIVE SKILLS MATRIX
+Two-column grid layout:
+LEFT COLUMN — Technical Skills (minimum 15 skills):
+List specific technologies as colored badge spans grouped by category:
+• Languages: (4-5 specific languages)
+• Frameworks: (4-5 specific frameworks)
+• Tools: (4-5 specific tools)
+• Databases: (2-3 databases)
+• Cloud: (2-3 cloud technologies)
+Badge style: display:inline-block;margin:4px;padding:7px 16px;border-radius:20px;font-size:12px;font-weight:700;background:[color]22;color:[color];border:1px solid [color]44
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-STRICT DESIGN RULES:
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-- Overall background: #0f172a (dark navy)
-- Card background: #1e293b
-- Card border: 1px solid #334155
-- Primary text: #e2e8f0
-- Muted text: #94a3b8
-- Accent colors: #3b82f6 (blue) #06b6d4 (cyan) #22c55e (green) #f59e0b (amber) #a855f7 (purple) #f43f5e (red)
-- Font: font-family:'Segoe UI',system-ui,Arial,sans-serif; font-size:14px; line-height:1.6
-- Wrap everything in: <div style="background:#0f172a;color:#e2e8f0;padding:24px;font-family:'Segoe UI',Arial,sans-serif;min-height:100vh;">
-- ALL styling must be inline CSS — no <style> tags, no external CSS
-- Section headers: font-size:20px, font-weight:800, margin-bottom:16px, with colored emoji
-- Generous padding and spacing — make it breathe
-- Use emojis liberally to make it visual and engaging
-- India-specific: all salaries in LPA, mention Indian cities, Indian companies
-- MINIMUM 1200 words of actual content
-- Output RAW HTML ONLY — absolutely no markdown, no ```html fences, no explanations"""
+RIGHT COLUMN — Soft Skills (6 skills):
+Communication, Problem Solving, Teamwork, Leadership, Time Management, Critical Thinking — each as a badge
+
+SECTION 5: 🏅 CERTIFICATIONS (MANDATORY — INCLUDE ALL THESE LINKS EXACTLY AS PROVIDED):
+<h2>🏅 Recommended Certifications</h2>
+COPY THESE CERTIFICATION LINKS EXACTLY — DO NOT MODIFY OR REMOVE ANY:
+{cert_html}
+Add a paragraph explaining WHY each certification matters specifically for {role} careers in India.
+Include details about exam cost, preparation time, and validity.
+
+SECTION 6: 📺 LEARNING RESOURCES
+{yt_html}
+Add context about why these videos are recommended.
+
+SECTION 7: 📚 COURSE RECOMMENDATIONS
+{crs_html}
+Add a brief description of how to use these courses effectively.
+
+SECTION 8: 🏢 TOP HIRING COMPANIES — DETAILED TABLE
+<table> with dark header row (background:#1e3a5f;color:white).
+MINIMUM 8 rows with these columns: Company | HQ City | Salary Range | Key Requirements | Application Process
+Include companies: {companies} and add 3-4 more relevant companies.
+Table style: width:100%;border-collapse:collapse;border-radius:12px;overflow:hidden
+Cell style: padding:14px 16px;border-bottom:1px solid #334155;font-size:13px
+
+SECTION 9: 🎯 DREAM JOB PROFILE — {job_title} at {company}
+• Detailed job description (4-5 sentences)
+• Day-in-the-life description (3-4 bullet points of what you'd actually do)
+• 8 Required Skills with ✅ checkmarks
+• Expected CTC: Entry/Mid/Senior ranges in LPA
+• 5 Interview Tips specific to this role
+• Common Interview Questions (list 4-5 real questions asked)
+
+SECTION 10: 📅 30-DAY QUICK START ACTION PLAN
+4 weekly cards in a 2x2 grid layout:
+Week 1 "Setup & Foundations": 5 specific daily tasks
+Week 2 "First Project": 5 specific daily tasks
+Week 3 "Deep Dive": 5 specific daily tasks
+Week 4 "Review & Plan Ahead": 5 specific daily tasks
+Each task should be specific and actionable (not vague like "learn coding")
+
+SECTION 11: 📖 RECOMMENDED BOOKS & RESOURCES
+List 6 must-read books for {role} career path:
+Each with: Book Title (bold) | Author | One-line why it matters | Difficulty level badge
+
+SECTION 12: 🚀 PRO TIPS FROM INDUSTRY EXPERTS
+10 tips (not 8 — TEN), each with:
+• Emoji icon
+• Bold title
+• 2-3 sentence detailed explanation
+• Make tips specific to {role} in the Indian job market
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DESIGN SYSTEM (FOLLOW EXACTLY):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+• Outer wrapper: <div style="background:#0f172a;color:#e2e8f0;padding:32px;font-family:'Segoe UI',system-ui,sans-serif;border-radius:20px;">
+• Section cards: background:#1e293b; border:1px solid #334155; border-radius:16px; padding:28px; margin:20px 0
+• Primary text: color:#e2e8f0
+• Muted text: color:#94a3b8
+• Accent colors: #3b82f6 (blue), #06b6d4 (cyan), #22c55e (green), #f59e0b (amber), #a855f7 (purple), #f43f5e (red)
+• Section headings: <h2> with emoji prefix, font-size:22px, font-weight:800, margin-bottom:16px
+• Sub-headings: <h3> with color matching section accent
+• ALL styling must be inline CSS — NO <style> tags
+• India-specific: all salaries in LPA (₹), Indian cities, Indian companies
+• Skill badges as inline-block spans with colored backgrounds
+• Use proper spacing between sections (margin:20px 0)
+
+CRITICAL RULES:
+1. Output RAW HTML ONLY — no markdown, no ```html, no explanations before or after
+2. DO NOT truncate — generate ALL 12 sections completely
+3. MINIMUM 2500 words of content
+4. Every section must have substantial content — no placeholder text
+5. Include the certification links from Section 5 EXACTLY as provided
+6. Make it India-focused with real company names, real salary data, real certifications"""
+
 
     try:
-        html = call_gemini(prompt, max_output_tokens=8192)
+        html = call_gemini(prompt, max_output_tokens=32768)
         html = html.replace("```html","").replace("```","").strip()
+        # ── Inject certification links server-side (guaranteed to appear) ──
+        if cert_html and '🏅' not in html:
+            cert_section = (
+                '<div style="background:#1e293b;border:1px solid #334155;border-radius:16px;'
+                'padding:24px;margin:24px 0;">'
+                '<h2 style="font-size:20px;font-weight:800;color:#a855f7;margin-bottom:16px;">'
+                '🏅 Recommended Certifications</h2>'
+                '<p style="color:#94a3b8;margin-bottom:12px;">Click to go directly to the official certification page:</p>'
+                f'<div style="display:flex;flex-wrap:wrap;gap:6px;">{cert_html}</div>'
+                '<p style="color:#94a3b8;margin-top:16px;font-size:13px;">'
+                '💡 Certifications boost your resume significantly in India — many top companies like TCS, Infosys, and Wipro '
+                'give preference to certified candidates during placement drives.</p></div>'
+            )
+            if '</div>' in html:
+                last_div = html.rfind('</div>')
+                html = html[:last_div] + cert_section + html[last_div:]
+            else:
+                html += cert_section
         log_progress(name, 'roadmap_generated', role)
         return jsonify({"roadmap": html})
     except Exception as e:
@@ -548,7 +794,7 @@ DESIGN RULES:
         return jsonify({"status":"error","message":f"AI quota reached. Add new key at aistudio.google.com/apikey"}), 503
 
 # ══════════════════════════════════════════════════════════════
-# CERTIFICATE SCANNER
+# 🔬 CERTIFICATE SCANNER — PREMIUM ANALYSIS
 # ══════════════════════════════════════════════════════════════
 @app.route('/api/scan_certificate', methods=['POST'])
 def scan_certificate():
@@ -557,17 +803,94 @@ def scan_certificate():
         header, encoded = d.get('image').split(',',1)
         mime = header.split(';')[0].split(':')[1]
         img  = base64.b64decode(encoded)
-        client = get_client()
-        resp = client.models.generate_content(
-            model="gemini-1.5-flash",
-            contents=[
-                types.Part.from_bytes(data=img, mime_type=mime),
-                "You are a skill extractor. Look at this certificate image carefully. Extract the top 4-6 technical skills, tools, or technologies this certificate covers. Return ONLY a comma-separated list of skills. Example: Python, Machine Learning, TensorFlow, Data Analysis, Neural Networks"
-            ]
-        )
-        return jsonify({"skills": resp.text.strip()})
+
+        vision_prompt = """You are WhatNxt Vision AI — an expert certificate & credential analyzer.
+
+Analyze this certificate image thoroughly. Return a JSON object with this EXACT structure (no markdown, no code fences — raw JSON only):
+
+{
+  "certificate_name": "Full certificate title as shown on the image",
+  "issuing_organization": "Organization/platform that issued it (e.g., Coursera, Udemy, Google, AWS, etc.)",
+  "completion_date": "Date shown on certificate or 'Not visible'",
+  "credential_id": "Credential/Certificate ID if visible, or 'Not visible'",
+  "skills": [
+    {"name": "Skill Name", "category": "Programming|Framework|Tool|Concept|Cloud|Database|Security|AI/ML|Other", "proficiency": "Beginner|Intermediate|Advanced"},
+    {"name": "Skill 2", "category": "...", "proficiency": "..."}
+  ],
+  "career_relevance": {
+    "matching_roles": ["Role 1", "Role 2", "Role 3"],
+    "industry_demand": "High|Medium|Low",
+    "salary_impact": "Brief 1-sentence about how this cert impacts salary in India"
+  },
+  "summary": "2-3 sentence professional summary of what this certificate demonstrates",
+  "next_certifications": ["Suggested next cert 1", "Suggested next cert 2", "Suggested next cert 3"]
+}
+
+Extract 6-10 specific skills. Be precise about skill names (e.g., "TensorFlow" not "Deep Learning Framework").
+If you cannot read the certificate clearly, still provide your best analysis based on visible text.
+Output ONLY the JSON object — no other text."""
+
+        # Try Gemini vision first (supports image input natively)
+        global _key_idx
+        _reload_keys()
+        total_keys = len(GEMINI_KEYS)
+        result = None
+
+        if total_keys > 0:
+            for attempt in range(total_keys * 2):
+                try:
+                    client = get_client()
+                    key_num = _key_idx % total_keys
+                    print(f"🔄 Cert scan: Trying Gemini key[{key_num}]...")
+                    resp = client.models.generate_content(
+                        model="gemini-2.5-flash",
+                        contents=[
+                            types.Part.from_bytes(data=img, mime_type=mime),
+                            vision_prompt
+                        ],
+                        config=types.GenerateContentConfig(
+                            max_output_tokens=2048,
+                            temperature=0.3,
+                            thinking_config=types.ThinkingConfig(thinking_budget=0)
+                        )
+                    )
+                    result = resp.text.strip()
+                    if result:
+                        print(f"✅ Cert scan success — Gemini vision")
+                        break
+                except Exception as inner_e:
+                    err = str(inner_e)
+                    if "429" in err or "RESOURCE_EXHAUSTED" in err or "quota" in err.lower():
+                        _key_idx += 1
+                        time.sleep(2)
+                    else:
+                        print(f"⚠️  Cert scan Gemini error: {err[:120]}")
+                        _key_idx += 1
+                        time.sleep(1)
+
+        # Parse and return structured result
+        if result:
+            # Clean up any markdown fences
+            result = result.replace("```json","").replace("```","").strip()
+            try:
+                parsed = json.loads(result)
+                # Extract simple skills list for backward compatibility
+                skills_list = [s["name"] for s in parsed.get("skills", [])]
+                parsed["skills_csv"] = ", ".join(skills_list)
+                log_progress("scanner", "cert_scanned", parsed.get("certificate_name", "Unknown"))
+                return jsonify({"analysis": parsed, "skills": parsed["skills_csv"]})
+            except json.JSONDecodeError:
+                # AI returned non-JSON, treat as simple skills list
+                return jsonify({"skills": result, "analysis": None})
+        else:
+            raise Exception("Vision models exhausted for cert scan")
     except Exception as e:
-        return jsonify({"skills":"Python, Machine Learning, Data Analysis, SQL, Statistics","note":"Manual skill entry mode"}), 200
+        print(f"⚠️  Certificate scanner fallback: {e}")
+        return jsonify({
+            "skills": "Python, Machine Learning, Data Analysis, SQL, Statistics",
+            "analysis": None,
+            "note": "AI vision unavailable — showing sample skills. Try again later."
+        }), 200
 
 # ══════════════════════════════════════════════════════════════
 # JOBS
@@ -597,12 +920,16 @@ def load_kaggle_jobs():
                           left_on=jid_col, right_on=id_col, how='left')
     return df
 
+# Cache jobs data at startup so we don't re-read 64MB CSV on every request
+df_jobs_cached = load_kaggle_jobs()
+print(f"✅ Jobs cached: {len(df_jobs_cached)} rows")
+
 @app.route('/api/get_jobs', methods=['POST'])
 def get_jobs():
     d    = request.json
     role = d.get('role','All'); loc = d.get('location','All')
     try:
-        df = load_kaggle_jobs()
+        df = df_jobs_cached
         if df.empty:
             return jsonify({"jobs":[],"total":0,"message":"jobs_data.csv not found"})
         title_col = next((c for c in df.columns if c.lower() in ('title','job_title','position','role')), df.columns[0])
@@ -921,24 +1248,231 @@ def get_progress():
 
 @app.route('/api/yearly_plan', methods=['POST'])
 def yearly_plan():
-    d   = request.json
+    d    = request.json
     role = d.get('role','Software Engineer')
+    name = d.get('name','Student')
     std  = d.get('standard','1st Year BTech')
+    gpa  = d.get('gpa','8.0')
+    college    = d.get('college','')
+    department = d.get('department','')
+    skill_level = d.get('skill_level','beginner')
+    goals = d.get('goals','')
     cur  = next((i for i,y in enumerate(["1st","2nd","3rd","4th"],1) if y in std), 1)
     rows = get_career_rows(role)
-    plans = {}
+    ctx  = get_career_context(role)
+
+    # CSV-based basic plan data for context
+    csv_plans = {}
     if rows:
         for col, num in [("Year_1_Plan",1),("Year_2_Plan",2),("Year_3_Plan",3),("Year_4_Plan",4)]:
-            if col in rows[0]: plans[f"Year {num}"] = rows[0][col]
-    return jsonify({"current_year":cur,"role":role,"plans":plans,"remaining_years":list(range(cur,5))})
+            if col in rows[0]: csv_plans[f"Year {num}"] = rows[0][col]
+
+    salary    = rows[0].get('Salary_Range','₹6–20 LPA') if rows else '₹6–20 LPA'
+    companies = rows[0].get('Top_Companies','TCS, Infosys, Wipro, Google, Amazon') if rows else 'TCS, Infosys, Google, Amazon'
+    certs     = rows[0].get('Certifications','') if rows else ''
+
+    prompt = f"""You are WhatNxt AI — India's #1 AI Career Planning System. Generate an EXTREMELY DETAILED, STRUCTURED, COMPREHENSIVE HTML yearly career plan. This should feel like a ₹50,000 premium career consultation document.
+
+STUDENT PROFILE:
+• Name: {name}
+• Academic Year: {std} (Currently in Year {cur} of 4)
+• GPA: {gpa}/10
+• College: {college or 'Engineering College, India'}
+• Department: {department or 'Computer Science'}
+• Skill Level: {skill_level}
+• Career Goal: {goals or role}
+• Target Role: {role}
+
+CAREER INTELLIGENCE DATA:
+{ctx[:2000]}
+
+CSV YEAR PLANS (use as base, but EXPAND massively):
+{json.dumps(csv_plans, default=str)}
+
+SALARY RANGE: {salary}
+TOP COMPANIES: {companies}
+CERTIFICATIONS: {certs}
+CURRENT YEAR: {cur}
+REMAINING YEARS: {list(range(cur,5))}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+MANDATORY OUTPUT — YOU MUST GENERATE ALL SECTIONS BELOW.
+DO NOT SKIP, TRUNCATE, OR SHORTEN ANY SECTION.
+MINIMUM TOTAL OUTPUT: 3000+ WORDS OF HTML CONTENT.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SECTION 1: 🎯 PERSONALIZED PLAN HEADER
+<div style="background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#0f172a 100%);border-radius:20px;padding:48px 36px;text-align:center;position:relative;overflow:hidden;border:1px solid #334155;margin-bottom:24px;">
+• "Your {4-cur+1}-Year Career Blueprint" as <h1> with gradient text
+• Address "{name}" personally
+• Show current position: "Year {cur} of 4 · {std}"
+• Target: "{role}" with salary "{salary}" in a glowing badge
+• A motivational line about the journey ahead
+</div>
+
+SECTION 2: 📊 CURRENT STATUS ASSESSMENT
+<div> with 4 stat cards in a grid:
+Card 1: 📍 Current Position — Year {cur}, {std}, GPA {gpa}
+Card 2: 🎯 Target Role — {role}
+Card 3: 💰 Salary Potential — {salary} with growth trajectory
+Card 4: ⏱️ Time Remaining — {4-cur} years to job-ready
+Each card: background:#1e293b; border-left:4px solid [unique color]; border-radius:16px; padding:22px
+</div>
+
+SECTION 3: 🗓️ DETAILED YEAR-BY-YEAR PLAN (MOST IMPORTANT — EXTREMELY DETAILED)
+Generate a detailed plan for EACH remaining year from Year {cur} to Year 4.
+Each year MUST be a separate card with ALL of the following sub-sections:
+
+For EACH year (color cycle: #3b82f6, #06b6d4, #22c55e, #f59e0b):
+<div style="background:#1e293b;border-radius:16px;padding:28px;border-left:5px solid [year-color];margin-bottom:20px;">
+
+  <h3> Year N — "[Theme Name]" (e.g., "Building the Foundation", "Deep Specialization", etc.)</h3>
+
+  📅 SEMESTER 1 (Months 1-6):
+  • Month 1-2: 4 specific tasks with exact technologies, tools, platforms
+  • Month 3-4: 4 specific tasks building on previous months
+  • Month 5-6: 4 specific tasks + 1 mini-project with full tech stack
+  Each task must name SPECIFIC technologies (e.g., "Complete Python for Everybody on Coursera", not "learn coding")
+
+  📅 SEMESTER 2 (Months 7-12):
+  • Month 7-8: 4 specific tasks
+  • Month 9-10: 4 specific tasks + 1 intermediate project
+  • Month 11-12: 3 tasks + 1 major project + portfolio update
+
+  🛠️ SKILLS TO MASTER THIS YEAR:
+  List 10-12 specific skills as colored badge spans grouped by:
+  - Programming Languages (3-4)
+  - Frameworks & Libraries (3-4)
+  - Tools & Platforms (3-4)
+  - Soft Skills (2-3)
+  Badge style: display:inline-block;margin:4px;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;background:[color]22;color:[color];border:1px solid [color]44
+
+  📁 PROJECTS TO BUILD (3-4 projects):
+  Each project must include:
+  - Project name (bold)
+  - Full tech stack
+  - 2-3 sentence description of what it does
+  - Expected outcome (e.g., "Deploy to Heroku, get 50+ GitHub stars")
+  - Difficulty level badge
+
+  🏅 CERTIFICATIONS TO PURSUE (2-3 per year):
+  - Certification name + issuing body
+  - Estimated prep time
+  - Exam cost
+  - Why it matters for {role}
+
+  📚 COURSES & RESOURCES (4-6 per year):
+  - Course name + platform + free/paid
+  - Estimated hours
+  - Specific URL if available
+
+  🎯 INTERNSHIP / EXPERIENCE GOALS:
+  - What type of internship to target
+  - Companies to apply to (name 5-6 specific companies)
+  - How to prepare for interviews
+  - Portfolio items needed
+
+  ✅ YEAR-END MILESTONES (5-6 checkpoints):
+  What student should be able to do/have by year end
+  Each as a checkbox-style item with ✅
+
+  📈 MONTHLY SCHEDULE TABLE:
+  A <table> with columns: Month | Focus Area | Key Deliverable | Hours/Week
+  12 rows (one per month)
+  Table style: width:100%;border-collapse:collapse;border-radius:12px;overflow:hidden
+</div>
+
+SECTION 4: 🎯 PLACEMENT PREPARATION TIMELINE
+<div> Detailed placement prep plan:
+- When to start DSA practice (which month, which platform — LeetCode, GeeksforGeeks, CodeForces)
+- Mock interview schedule (weekly/monthly breakdown)
+- Company-specific preparation (for {companies})
+- Resume building milestones
+- LinkedIn optimization steps
+- GitHub portfolio requirements (minimum repos, stars, contributions)
+- Competitive programming targets
+</div>
+
+SECTION 5: 📊 WEEKLY ROUTINE TEMPLATE
+<div> A model weekly schedule for the current year ({std}):
+A visual weekly planner table:
+| Day | Morning (2hrs) | Afternoon (2hrs) | Evening (1hr) |
+Fill with specific activities like "DSA on LeetCode", "Project work", "Course videos", "Mock interviews"
+</div>
+
+SECTION 6: 🏢 TARGET COMPANIES BY YEAR
+<table> with columns: Company | When to Apply | Required Skills | Package Range | Application Process
+Minimum 10 companies including {companies} + startups + MNCs
+Group by: Dream (Year 4), Target (Year 3-4), Safe (Year 2-3)
+</table>
+
+SECTION 7: 💡 SUCCESS STRATEGIES & PRO TIPS
+10 detailed, actionable tips specific to {role} career in India:
+Each with emoji + bold title + 3-4 sentence explanation
+Include: networking strategies, GitHub optimization, LinkedIn tips, interview prep, salary negotiation
+
+SECTION 8: 🚀 30-DAY IMMEDIATE ACTION PLAN
+4 weekly cards (Week 1-4) in a 2x2 grid:
+Each week has 7 daily tasks (one per day, Monday-Sunday)
+Tasks must be ultra-specific: "Day 1: Create GitHub account, set up profile, push first repo"
+Not vague like "start learning"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DESIGN SYSTEM (FOLLOW EXACTLY):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+• Outer wrapper: <div style="background:#0f172a;color:#e2e8f0;padding:32px;font-family:'Segoe UI',system-ui,sans-serif;border-radius:20px;">
+• Section cards: background:#1e293b; border:1px solid #334155; border-radius:16px; padding:28px; margin:20px 0
+• Primary text: color:#e2e8f0
+• Muted text: color:#94a3b8
+• Accent colors: #3b82f6 (blue), #06b6d4 (cyan), #22c55e (green), #f59e0b (amber), #a855f7 (purple), #f43f5e (red)
+• Section headings: <h2> with emoji prefix, font-size:22px, font-weight:800, margin-bottom:16px
+• Year cards: border-left:5px solid [year-color]
+• ALL styling must be inline CSS — NO <style> tags
+• India-specific: salaries in LPA (₹), Indian cities, Indian companies
+• Skill badges as inline-block spans with colored backgrounds
+• Tables with dark header (background:#1e3a5f;color:white)
+
+CRITICAL RULES:
+1. Output RAW HTML ONLY — no markdown, no ```html, no explanations
+2. DO NOT truncate — generate ALL sections completely
+3. MINIMUM 3000 words of content
+4. Every section must have substantial, detailed content
+5. Be India-focused: real companies, real salaries, real platforms
+6. Make it feel like a premium ₹50,000 career consultation report
+7. Address "{name}" by name throughout the document
+8. Be SPECIFIC — name exact tools, platforms, courses, companies"""
+
+    try:
+        html = call_gemini(prompt, max_output_tokens=32768)
+        html = html.replace("```html","").replace("```","").strip()
+        log_progress(name, 'yearly_plan_generated', f"{role} Year {cur}")
+        return jsonify({
+            "current_year": cur,
+            "role": role,
+            "plans": csv_plans,
+            "remaining_years": list(range(cur,5)),
+            "detailed_plan": html
+        })
+    except Exception as e:
+        print(f"❌ Yearly plan AI error: {e}")
+        # Fallback to basic CSV data if AI fails
+        return jsonify({
+            "current_year": cur,
+            "role": role,
+            "plans": csv_plans,
+            "remaining_years": list(range(cur,5)),
+            "detailed_plan": None,
+            "error": "AI quota exhausted — showing basic plan. Add a new key at aistudio.google.com/apikey"
+        })
 
 if __name__ == '__main__':
-    print(f"🚀 WhatNxt API — http://127.0.0.1:5000")
-    print(f"🤖 AI Provider  : Google Gemini (gemini-1.5-flash primary)")
-    print(f"🔑 Keys loaded  : {len(GEMINI_KEYS)}")
+    print(f"🚀 WhatNxt API — http://127.0.0.1:5001")
+    print(f"🤖 AI Primary   : Gemini ({', '.join(GEMINI_MODELS)})")
+    print(f"🔑 Gemini Keys  : {len(GEMINI_KEYS)} (PRIMARY)")
+    print(f"🌐 OpenRouter   : {'✅ Enabled (FALLBACK — ' + OPENROUTER_MODEL + ')' if OPENROUTER_API_KEY else '❌ Disabled'}")
     print(f"📊 Career rows  : {len(df_career)}")
     print(f"📝 Quiz rows    : {len(df_quiz)}")
     print(f"📚 Course rows  : {len(df_courses)}")
-    print(f"💡 To add more keys: edit GEMINI_KEYS list at top of file")
-    print(f"🆓 Get free key : https://aistudio.google.com/apikey")
-    app.run(port=5000, debug=True, use_reloader=False)
+    print(f"💡 Gemini keys  : https://aistudio.google.com/apikey")
+    print(f"💡 OpenRouter   : https://openrouter.ai/keys")
+    app.run(port=5001, debug=True, use_reloader=False)
