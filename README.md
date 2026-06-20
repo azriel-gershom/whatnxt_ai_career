@@ -78,6 +78,13 @@ Edit `app.py` and add your keys:
 | 🧭 **Career Discovery** | Quiz-based career matching with detailed reports |
 | 🧠 **Skill Quiz** | Domain-specific knowledge assessment |
 | 💼 **Job Board** | AI-curated job listings with cover letter generation |
+
+---
+
+## 📜 License
+
+This project is licensed under the MIT License. See the `LICENSE` file for details.
+
 | 📚 **Course Library** | Curated free & paid course recommendations |
 | 👁️ **Certificate Scanner** | Vision AI skill extraction from certificate images |
 | 💬 **AI Chatbot** | Personal career mentor powered by Gemini |
